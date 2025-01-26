@@ -26,8 +26,7 @@ module.exports = {
       password: process.env.SMTP_PASSWORD || "password",
     },
     cache: {
-      redisHost: process.env.REDIS_HOST || "localhost",
-      redisPort: process.env.REDIS_PORT || 6379,
+      redisUrl: process.env.REDIS_URL || "redis://votre-url-redis",
     },
   };
   
