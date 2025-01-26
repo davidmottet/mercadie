@@ -18,6 +18,11 @@ module.exports = {
     log: {
       level: process.env.LOG_LEVEL || "info",
       format: process.env.LOG_FORMAT || "combined",
+      directory: process.env.LOG_DIR || "logs",
+      filename: {
+        error: "error.log",
+        combined: "combined.log"
+      }
     },
     mail: {
       smtpHost: process.env.SMTP_HOST || "smtp.example.com",

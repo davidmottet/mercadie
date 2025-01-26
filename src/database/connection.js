@@ -1,25 +1,32 @@
 const mongoose = require("mongoose");
 const config = require("../../config/default");
+const logger = require("../utils/logger");
 
 const connectToDatabase = async () => {
-  console.log("🔄 Tentative de connexion à la base de données...");
+  logger.info("🔄 Tentative de connexion à la base de données...");
   
   try {
     await mongoose.connect(config.database.uri);
-    console.log("✅ Connecté à la base de données");
+    logger.info("✅ Connecté à la base de données");
   } catch (err) {
-    console.error("❌ Erreur de connexion à la base de données:", err);
+    logger.error("❌ Erreur de connexion à la base de données:", {
+      error: err.message,
+      stack: err.stack
+    });
     setTimeout(connectToDatabase, 5000);
   }
 };
 
 mongoose.connection.on('disconnected', () => {
-  console.log('🔄 Déconnecté de la base de données. Tentative de reconnexion...');
+  logger.warn('🔄 Déconnecté de la base de données. Tentative de reconnexion...');
   connectToDatabase();
 });
 
 mongoose.connection.on('error', (err) => {
-  console.error('❌ Erreur de connexion MongoDB:', err);
+  logger.error('❌ Erreur de connexion MongoDB:', {
+    error: err.message,
+    stack: err.stack
+  });
 });
 
 module.exports = connectToDatabase;
