@@ -158,7 +158,7 @@ Pour configurer MongoDB avec Docker, suivez ces étapes :
    ```bash
    docker run -d \
    --name mongodb \
-   --network host \
+   -p 27017:27017 \
    -e MONGO_INITDB_ROOT_USERNAME=admin \
    -e MONGO_INITDB_ROOT_PASSWORD=<votre_mot_de_passe> \
    -v mongodb_data:/data/db \
