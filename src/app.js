@@ -1,5 +1,7 @@
-const express = require("express");
-const connectToDatabase = require('./database/connection');
+import express from 'express';
+import config from '../config/default.js';
+import ingredientRoutes from './routes/ingredients.js';
+import connectToDatabase from './database/connection.js';
 
 const app = express();
 
@@ -7,6 +9,9 @@ app.use(express.json());
 
 connectToDatabase();
 
-// ... le reste de votre code app.js ...
+// Configuration des routes API
+const apiBasePath = config.api.basePath;
+const apiVersion = config.api.version;
+const baseRoute = `${apiBasePath}/${apiVersion}`;
 
-module.exports = app;
+export default app;

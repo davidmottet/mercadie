@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const config = require("../../config/default");
-const logger = require("../utils/logger");
+import mongoose from 'mongoose';
+import config from '../../config/default.js';
+import logger from '../utils/logger.js';
 
 const connectToDatabase = async () => {
   logger.info("🔄 Tentative de connexion à la base de données...");
@@ -29,4 +29,4 @@ mongoose.connection.on('error', (err) => {
   });
 });
 
-module.exports = connectToDatabase;
+export default connectToDatabase;
