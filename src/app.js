@@ -9,9 +9,10 @@ app.use(express.json());
 
 connectToDatabase();
 
-// Configuration des routes API
 const apiBasePath = config.api.basePath;
 const apiVersion = config.api.version;
 const baseRoute = `${apiBasePath}/${apiVersion}`;
+
+app.use(`${baseRoute}/ingredients`, ingredientRoutes);
 
 export default app;
