@@ -150,6 +150,53 @@ Si vous souhaitez contribuer :
    docker run -e PORT=4000 -p 4000:4000 mon-projet-nodejs
    ```
 
+## Configuration MongoDB avec Docker
+
+Pour configurer MongoDB avec Docker, suivez ces étapes :
+
+1. **Lancer MongoDB avec Docker**
+   ```bash
+   docker run -d \
+   --name mongodb \
+   --network host \
+   -e MONGO_INITDB_ROOT_USERNAME=admin \
+   -e MONGO_INITDB_ROOT_PASSWORD=<votre_mot_de_passe> \
+   -v mongodb_data:/data/db \
+   --restart unless-stopped \
+   mongo
+   ```
+
+2. **Configurer les variables d'environnement**
+
+   Dans votre fichier `.env`, ajoutez :
+   ```env
+   DATABASE_URI=mongodb://admin:<votre_mot_de_passe>@localhost:27017/mercadie?authSource=admin
+   ```
+
+3. **Vérifier l'état de MongoDB**
+   ```bash
+   # Vérifier que le conteneur est en cours d'exécution
+   docker ps | grep mongodb
+
+   # Voir les logs du conteneur
+   docker logs mongodb
+   ```
+
+4. **Commandes Docker utiles**
+   ```bash
+   # Arrêter MongoDB
+   docker stop mongodb
+
+   # Démarrer MongoDB
+   docker start mongodb
+
+   # Supprimer le conteneur
+   docker rm mongodb
+
+   # Voir les volumes
+   docker volume ls
+   ```
+
 ## Licence
 
 Ce projet est sous licence [MIT](LICENSE).
