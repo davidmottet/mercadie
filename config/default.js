@@ -6,6 +6,10 @@ module.exports = {
     },
     database: {
       uri: process.env.DATABASE_URI || "mongodb://localhost:27017/nom_de_la_base",
+      options: {
+        serverSelectionTimeoutMS: 5000,
+        maxPoolSize: 10
+      }
     },
     jwt: {
       secret: process.env.JWT_SECRET || "defaultsecretkey",

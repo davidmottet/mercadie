@@ -6,7 +6,7 @@ const connectToDatabase = async () => {
   logger.info("🔄 Tentative de connexion à la base de données...");
   
   try {
-    await mongoose.connect(config.database.uri);
+    await mongoose.connect(config.database.uri, config.database.options);
     logger.info("✅ Connecté à la base de données");
   } catch (err) {
     logger.error("❌ Erreur de connexion à la base de données:", {
