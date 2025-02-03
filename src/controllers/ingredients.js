@@ -1,5 +1,4 @@
 import Ingredient from '../models/ingredient.js';
-import MeasurementUnit from '../models/measurementUnit.js';
 
 export const createIngredient = async (req, res) => {
     try {
