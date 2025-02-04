@@ -106,6 +106,24 @@ Voici un résumé de la structure du projet :
 - **`npm run dev`** : Lance le serveur en mode développement avec redémarrage automatique via [nodemon](https://github.com/remy/nodemon).
 - **`npm start`** : Lance le serveur en mode production.
 - **`npm test`** : Exécute les tests (si configurés).
+- **`npm run lint`** : Analyse le code pour détecter les problèmes de style et de syntaxe selon les règles définies dans ESLint.
+- **`npm run lint:fix`** : Analyse et corrige automatiquement les problèmes de style et de syntaxe dans le code selon les règles définies dans ESLint.
+
+## Linting
+
+Pour analyser et corriger les problèmes de style et de syntaxe dans votre code, utilisez les commandes suivantes :
+
+**Analyser le code** : 
+Exécutez cette commande pour détecter les problèmes de style et de syntaxe :
+```bash
+npm run lint
+```
+
+**Corriger automatiquement les problèmes** : 
+Utilisez cette commande pour corriger automatiquement certains problèmes détectés :
+```bash
+npm run lint
+```
 
 ## Tests
 
