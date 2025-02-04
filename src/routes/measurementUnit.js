@@ -1,10 +1,10 @@
 import express from 'express';
 import {
-    createMeasurementUnit,
-    getMeasurementUnits,
-    getMeasurementUnitById,
-    updateMeasurementUnit,
-    deleteMeasurementUnit
+  createMeasurementUnit,
+  getMeasurementUnits,
+  getMeasurementUnitById,
+  updateMeasurementUnit,
+  deleteMeasurementUnit
 } from '../controllers/measurementUnits.js';
 
 const router = express.Router();

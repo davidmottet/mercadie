@@ -1,10 +1,10 @@
 import express from 'express';
 import {
-    createIngredient,
-    getIngredients,
-    getIngredientById,
-    updateIngredient,
-    deleteIngredient
+  createIngredient,
+  getIngredients,
+  getIngredientById,
+  updateIngredient,
+  deleteIngredient
 } from '../controllers/ingredients.js';
 
 const router = express.Router();
