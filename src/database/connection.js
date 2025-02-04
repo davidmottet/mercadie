@@ -4,7 +4,7 @@ import logger from '../utils/logger.js';
 
 const connectToDatabase = async () => {
   logger.info("🔄 Tentative de connexion à la base de données...");
-  
+
   try {
     await mongoose.connect(config.database.uri, config.database.options);
     logger.info("✅ Connecté à la base de données");

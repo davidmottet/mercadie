@@ -2,7 +2,7 @@ import Redis from 'redis';
 import config from '../config/default.js';
 
 class CacheManager {
-  constructor() {
+  constructor () {
     this.client = null;
     this.isConnected = false;
     this.localCache = new Map();
@@ -11,7 +11,7 @@ class CacheManager {
     this.initRedis();
   }
 
-  async initRedis() {
+  async initRedis () {
     try {
       this.client = Redis.createClient({
         url: config.cache.redisUrl
@@ -31,7 +31,7 @@ class CacheManager {
     }
   }
 
-  async get(key) {
+  async get (key) {
     try {
       if (this.isConnected) {
         return await this.client.get(key);
@@ -43,7 +43,7 @@ class CacheManager {
     }
   }
 
-  async set(key, value, ttl = 3600) {
+  async set (key, value, ttl = 3600) {
     try {
       if (this.isConnected) {
         await this.client.setEx(key, ttl, value);
@@ -55,7 +55,7 @@ class CacheManager {
     }
   }
 
-  async del(key) {
+  async del (key) {
     try {
       if (this.isConnected) {
         await this.client.del(key);

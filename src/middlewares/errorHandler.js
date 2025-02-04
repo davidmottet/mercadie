@@ -2,15 +2,15 @@ import config from '../config/default.js';
 
 const handleErrors = (err, _req, res) => {
   const statusCode = err.statusCode || 500;
-  
+
   const message = err.message || "An unexpected error occurred";
-  
+
   const errorDetails =
     config.app.environment === "development"
       ? {
-          stack: err.stack, 
-          error: err, 
-        }
+        stack: err.stack,
+        error: err,
+      }
       : undefined;
 
   res.status(statusCode).json({
