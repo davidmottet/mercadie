@@ -1,4 +1,5 @@
-const Redis = require('redis');
+import Redis from 'redis';
+import config from '../config/default.js';
 
 class CacheManager {
   constructor() {
@@ -17,7 +18,7 @@ class CacheManager {
       });
 
       this.client.on('error', (err) => {
-        console.log('Redis non disponible, utilisation du cache local:', err);
+        console.error('Redis non disponible, utilisation du cache local:', err);
         this.isConnected = false;
       });
 
@@ -25,7 +26,7 @@ class CacheManager {
       this.isConnected = true;
       console.log('✅ Redis connecté');
     } catch (error) {
-      console.log('⚠️ Redis non disponible, utilisation du cache local');
+      console.error('⚠️ Erreur lors de la connexion à Redis:', error);
       this.isConnected = false;
     }
   }
@@ -37,6 +38,7 @@ class CacheManager {
       }
       return this.localCache.get(key);
     } catch (error) {
+      console.error(`Erreur lors de la récupération de la clé ${key}:`, error);
       return this.localCache.get(key);
     }
   }
@@ -48,6 +50,7 @@ class CacheManager {
       }
       this.localCache.set(key, value);
     } catch (error) {
+      console.error(`Erreur lors de la définition de la clé ${key}:`, error);
       this.localCache.set(key, value);
     }
   }
@@ -59,9 +62,10 @@ class CacheManager {
       }
       this.localCache.delete(key);
     } catch (error) {
+      console.error(`Erreur lors de la suppression de la clé ${key}:`, error);
       this.localCache.delete(key);
     }
   }
 }
 
-module.exports = new CacheManager();
+export default new CacheManager();
