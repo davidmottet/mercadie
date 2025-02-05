@@ -1,4 +1,5 @@
 import express from 'express';
+import { authMiddleware, requireRole } from '../middlewares/auth.js';
 import {
   createRecipe,
   getRecipes,
@@ -9,10 +10,10 @@ import {
 
 const router = express.Router();
 
-router.post('/', createRecipe);
-router.get('/', getRecipes);
-router.get('/:id', getRecipeById);
-router.put('/:id', updateRecipe);
-router.delete('/:id', deleteRecipe);
+router.get('/', authMiddleware, getRecipes);
+router.get('/:id', authMiddleware, getRecipeById);
+router.post('/', authMiddleware, requireRole('admin'), createRecipe);
+router.put('/:id', authMiddleware, requireRole('admin'), updateRecipe);
+router.delete('/:id', authMiddleware, requireRole('admin'), deleteRecipe);
 
 export default router;
