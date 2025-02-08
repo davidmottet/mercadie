@@ -1,4 +1,5 @@
 import express from 'express';
+import { authMiddleware, requireRole } from '../middlewares/auth.js';
 import {
   createMeasurementUnit,
   getMeasurementUnits,
@@ -9,10 +10,10 @@ import {
 
 const router = express.Router();
 
-router.post('/', createMeasurementUnit);
-router.get('/', getMeasurementUnits);
-router.get('/:id', getMeasurementUnitById);
-router.put('/:id', updateMeasurementUnit);
-router.delete('/:id', deleteMeasurementUnit);
+router.get('/', authMiddleware, getMeasurementUnits);
+router.get('/:id', authMiddleware, getMeasurementUnitById);
+router.post('/', authMiddleware, requireRole('admin'), createMeasurementUnit);
+router.put('/:id', authMiddleware, requireRole('admin'), updateMeasurementUnit);
+router.delete('/:id', authMiddleware, requireRole('admin'), deleteMeasurementUnit);
 
 export default router;
