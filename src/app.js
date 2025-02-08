@@ -1,14 +1,17 @@
 import express from 'express';
 import config from '../config/default.js';
+import connectToDatabase from './database/connection.js';
+import { handle404, handleErrors } from './middlewares/errorHandler.js';
 import ingredientRoutes from './routes/ingredients.js';
 import measurementUnitRoutes from './routes/measurementUnit.js';
 import recipes from './routes/recipes.js'
 import auth from './routes/auth.js'
-import connectToDatabase from './database/connection.js';
 
 const app = express();
 
 app.use(express.json());
+app.use(handle404);
+app.use(handleErrors);
 
 connectToDatabase();
 

@@ -1,4 +1,4 @@
-import config from '../config/default.js';
+import config from '../../config/default.js';
 
 const handleErrors = (err, _req, res) => {
   const statusCode = err.statusCode || 500;
@@ -31,4 +31,4 @@ const handle404 = (_req, res) => {
   });
 };
 
-export default { handleErrors, handle404 };
+export { handleErrors, handle404 };
