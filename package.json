@@ -29,11 +29,14 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "fs": "^0.0.1-security",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "morgan": "^1.10.0",
+    "openai": "^4.83.0",
     "redis": "^4.7.0",
+    "url": "^0.11.4",
     "winston": "^3.17.0"
   },
   "devDependencies": {
