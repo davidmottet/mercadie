@@ -5,8 +5,9 @@ import config from '../config/default.js';
 import connectToDatabase from './database/connection.js';
 import ingredientRoutes from './routes/ingredients.js';
 import measurementUnitRoutes from './routes/measurementUnit.js';
-import recipes from './routes/recipes.js'
-import auth from './routes/auth.js'
+import recipes from './routes/recipes.js';
+import auth from './routes/auth.js';
+import generator from './routes/generator.js';
 import { handle404, handleErrors } from './middlewares/errorHandler.js';
 
 const app = express();
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(`${baseRoute}/ingredients`, ingredientRoutes);
 app.use(`${baseRoute}/measurement-units`, measurementUnitRoutes);
 app.use(`${baseRoute}/recipes`, recipes);
+app.use(`${baseRoute}/generator`, generator);
 app.use(`${baseRoute}/auth`, auth);
 
 app.use(handle404);

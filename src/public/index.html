@@ -18,7 +18,7 @@
         document.getElementById('ingredientForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             const ingredient = document.getElementById('ingredient').value;
-            const response = await fetch('/api/v1/generate-food-data', {
+            const response = await fetch('/api/v1/generator/ingredient', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
