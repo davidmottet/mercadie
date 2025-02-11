@@ -1,8 +1,8 @@
 import express from 'express';
 import { authMiddleware, requireRole } from '../middlewares/auth.js';
 import {
-    generateIngredients,
-    generateIngredient
+  generateIngredients,
+  generateIngredient
 } from '../controllers/generator.js';
 
 const router = express.Router();
