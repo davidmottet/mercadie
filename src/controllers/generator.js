@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import translate from 'translate';
 import config from '../../config/default.js';
 import Ingredient from '../models/ingredient.js';
 
@@ -9,9 +10,9 @@ const openai = new OpenAI({
 // Fonction pour générer dynamiquement le SYSTEM_PROMPT
 function generateSystemPrompt () {
   const fields = Ingredient.schema.paths;
-  let prompt = `Tu es NutriGen, un expert en nutrition avec accès à :\n`;
-  prompt += `- La base Ciqual 2024\n- Les dernières études de l'ANSES\n- La base de données USDA\n- Les publications scientifiques récentes\n\n`;
-  prompt += `Génère un JSON valide pour un ingrédient avec ces champs :\n{\n`;
+  let prompt = `NutriGen, nutrition expert. Access:\n`;
+  prompt += `- Ciqual 2024\n- ANSES\n- USDA\n- Recent publications\n\n`;
+  prompt += `Generate a JSON for an ingredient with:\n{\n`;
 
   for (const [key, value] of Object.entries(fields)) {
     if (key !== '__v' && key !== '_id' && key !== 'createdAt' && key !== 'updatedAt') {
@@ -51,7 +52,7 @@ export const generateIngredients = async (req, res) => {
       model: "gpt-4-turbo",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Génère une fiche complète pour : ${ingredients}` }
+        { role: "user", content: `Create a full profile for ${ingredient}, translate to English, and return it.` }
       ],
       response_format: { type: "json_object" },
       temperature: 0.2
@@ -59,7 +60,7 @@ export const generateIngredients = async (req, res) => {
 
     const data = JSON.parse(completion.choices[0].message.content);
 
-    if (!data.name || !data.quantity) {
+    if (!('name' in data) || !('quantity' in data)) {
       throw new Error('Structure JSON invalide');
     }
 
@@ -81,7 +82,7 @@ export const generateIngredient = async (req, res) => {
       model: "gpt-4-turbo",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Génère une fiche complète pour : ${ingredient}` }
+        { role: "user", content: `Create a full profile for ${ingredient}, translate to English, and return it.` }
       ],
       response_format: { type: "json_object" },
       temperature: 0.2
@@ -89,7 +90,7 @@ export const generateIngredient = async (req, res) => {
 
     const data = JSON.parse(completion.choices[0].message.content);
 
-    if (!data.name || !data.quantity) {
+    if (!('name' in data) || !('quantity' in data)) {
       throw new Error('Structure JSON invalide');
     }
 
