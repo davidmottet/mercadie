@@ -1,0 +1,33 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Données Alimentaires</title>
+</head>
+<body>
+    <h1>Générateur de Données Alimentaires</h1>
+    <form id="ingredientForm">
+        <input type="text" id="ingredient" name="ingredient" placeholder="Entrez un légume ou un fruit" required>
+        <button type="submit">Soumettre</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('ingredientForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const ingredient = document.getElementById('ingredient').value;
+            const response = await fetch('/api/v1/generator/ingredient', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ingredient })
+            });
+            const data = await response.json();
+            document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+</html>

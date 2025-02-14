@@ -19,6 +19,11 @@ const config = {
     version: "v1",
     basePath: "/api",
   },
+  ia: {
+    openAi: {
+      key: process.env.OPENAI_API_KEY || "defaultsecretkey"
+    }
+  },
   log: {
     level: process.env.LOG_LEVEL || "info",
     format: process.env.LOG_FORMAT || "combined",
