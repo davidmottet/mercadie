@@ -23,7 +23,7 @@ const apiBasePath = config.api.basePath;
 const apiVersion = config.api.version;
 const baseRoute = `${apiBasePath}/${apiVersion}`;
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 app.use(`${baseRoute}/ingredients`, ingredientRoutes);
 app.use(`${baseRoute}/measurement-units`, measurementUnitRoutes);
 app.use(`${baseRoute}/recipes`, recipes);
