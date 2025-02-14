@@ -8,6 +8,7 @@ import measurementUnitRoutes from './routes/measurementUnit.js';
 import recipes from './routes/recipes.js';
 import auth from './routes/auth.js';
 import generator from './routes/generator.js';
+import './services/cron.js';
 import { handle404, handleErrors } from './middlewares/errorHandler.js';
 
 const app = express();

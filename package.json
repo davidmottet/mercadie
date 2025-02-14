@@ -35,6 +35,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "morgan": "^1.10.0",
+    "node-cron": "^3.0.3",
     "openai": "^4.83.0",
     "redis": "^4.7.0",
     "url": "^0.11.4",
