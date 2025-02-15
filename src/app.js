@@ -34,10 +34,21 @@ app.use(`${baseRoute}/generator`, generator);
 app.use(`${baseRoute}/auth`, auth);
 
 app.get('/', (req, res) => {
-    res.render('index', { title: 'Hey', message: 'Hello there!' })
-})
+    const user = {
+        displayName: 'John Doe',
+        photoURL: '/path/to/photo.jpg'
+    };
+    const logo = '/path/to/logo.png';
+    const order = { length: 3 };
+    const changeHeader = false;
 
-app.get('/ingredients', renderIngredientsPage);
+    res.render('index', {
+        user,
+        logo,
+        order,
+        changeHeader
+    });
+});
 
 app.use(handle404);
 app.use(handleErrors);

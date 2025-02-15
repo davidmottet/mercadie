@@ -1,0 +1,39 @@
+<header id="main-header" class="bg-transparent fixed z-50 top-0 left-0 w-full transition duration-500">
+    <nav class="flex items-center max-w-screen-xl mx-auto px-6 py-3">
+        <div class="flex flex-grow">
+            <img class="w-36 cursor-pointer" src="<%= logo %>" alt="logo" onclick="window.location.href='/'" />
+        </div>
+        <% if (user.displayName) { %>
+            <div class="flex items-center justify-end space-x-4">
+                <a href="/admin" class="text-gray-600">Admin</a>
+                <div class="relative flex cursor-pointer" onclick="window.location.href='/orders'">
+                    <span class="bg-primary w-6 h-6 rounded-full flex items-center justify-center text-white absolute -right-2 -top-2"><%= order.length %></span>
+                    <i class="cursor-pointer w-6 h-6 text-gray-700">🛒</i>
+                </div>
+                <img src="<%= user.photoURL %>" alt="<%= user.displayName %>" class="w-10 h-10 rounded-full" />
+                <p class="text-gray-700 hidden md:block lg:block"><%= user.displayName %></p>
+                <i class="cursor-pointer w-6 h-6 text-gray-700" onclick="signOutUser()">🔓</i>
+            </div>
+        <% } else { %>
+            <div class="flex items-center justify-end space-x-6">
+                <button class="poppins" onclick="window.location.href='/signin'">Sign In</button>
+                <button class="bg-primary px-6 py-3 text-white poppins rounded-full ring-red-300 focus:outline-none focus:ring-4 transform transition duration-700 hover:scale-105" onclick="window.location.href='/signup'">Sign Up</button>
+            </div>
+        <% } %>
+    </nav>
+</header>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const header = document.getElementById('main-header');
+        const originalClass = header.className;
+        const scrolledClass = "bg-white fixed z-50 top-0 left-0 w-full shadow-md transition duration-500";
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > header.offsetHeight) {
+                header.className = scrolledClass;
+            } else {
+                header.className = originalClass;
+            }
+        });
+    });
+</script>
