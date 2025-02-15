@@ -6,7 +6,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node -r dotenv/config server.js",
+    "build:css": "npx @tailwindcss/cli -i ./src/views/input.css -o ./src/public/output.css --watch",
     "dev": "nodemon -r dotenv/config server.js",
+    "dev:all": "concurrently \"npm run build:css\" \"npm run dev\"",
     "lint": "eslint 'src/**/*.js?(x)'",
     "lint:fix": "eslint 'src/**/*.js?(x)' --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,23 +27,28 @@
   },
   "homepage": "https://github.com/davidmottet/mercadie#readme",
   "dependencies": {
+    "@tailwindcss/cli": "^4.0.6",
     "@vitalets/google-translate-api": "^9.2.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "morgan": "^1.10.0",
+    "node-cron": "^3.0.3",
     "openai": "^4.83.0",
     "redis": "^4.7.0",
+    "tailwindcss": "^4.0.6",
     "url": "^0.11.4",
     "winston": "^3.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "concurrently": "^9.1.2",
     "eslint": "^9.19.0",
     "globals": "^15.14.0",
     "nodemon": "^3.1.9"

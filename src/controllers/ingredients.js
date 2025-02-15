@@ -61,3 +61,12 @@ export const deleteIngredient = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const renderIngredientsPage = async (req, res) => {
+  try {
+    const ingredients = await Ingredient.find().populate('measurementUnit');
+    res.render('ingredients', { ingredients });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
