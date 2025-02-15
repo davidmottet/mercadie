@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import app from './src/app.js';
 import config from './config/default.js';
+import app from './src/app.js';
 import logger from './src/utils/logger.js';
+import { fullUrl } from './src/utils/isIpAddress.js';
 
-const PORT = config.app.port;
-app.listen(PORT, () => {
-  logger.info(`🚀 Serveur démarré sur http://localhost:${PORT}`);
+app.listen(config.app.port, () => {
+  logger.info(`🚀 Serveur démarré sur ${fullUrl}`);
 });

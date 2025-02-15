@@ -1,6 +1,7 @@
 const config = {
   app: {
     name: "mercadie",
+    url: process.env.URL || "mercadie.com",
     port: process.env.PORT || 3000,
     environment: process.env.NODE_ENV || "development",
   },
