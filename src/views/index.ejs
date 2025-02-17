@@ -13,6 +13,72 @@
 
         <%- include('partials/banner') %>
 
+        
+        <section class="my-12 max-w-screen-xl mx-auto px-6">
+            <div class="flex items-center justify-center space-x-6">
+                <p id="breakfast-tab" class="menu_tab poppins cursor-pointer" onclick="handleMenuTabs('Breakfast')">Breakfast</p>
+                <p id="lunch-tab" class="menu_tab poppins cursor-pointer" onclick="handleMenuTabs('Lunch')">Lunch</p>
+                <p id="dinner-tab" class="menu_tab poppins cursor-pointer" onclick="handleMenuTabs('Dinner')">Dinner</p>
+            </div>
+            <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-12">
+                <% const items = [
+                    { mealType: 'Breakfast', foodType: 'Pancakes', image: 'pancakes.jpg', title: 'Delicious Pancakes', description: 'Fluffy pancakes with syrup', price: 5.99 },
+                    { mealType: 'Breakfast', foodType: 'Omelette', image: 'omelette.jpg', title: 'Cheese Omelette', description: 'Omelette with cheese and herbs', price: 4.99 },
+                    { mealType: 'Breakfast', foodType: 'Smoothie', image: 'smoothie.jpg', title: 'Fruit Smoothie', description: 'Refreshing fruit smoothie', price: 3.99 },
+                    { mealType: 'Lunch', foodType: 'Burger', image: 'burger.jpg', title: 'Juicy Burger', description: 'Tasty beef burger with cheese', price: 8.99 },
+                    { mealType: 'Lunch', foodType: 'Salad', image: 'salad.jpg', title: 'Caesar Salad', description: 'Fresh Caesar salad with croutons', price: 7.99 },
+                    { mealType: 'Lunch', foodType: 'Sandwich', image: 'sandwich.jpg', title: 'Club Sandwich', description: 'Classic club sandwich with turkey', price: 6.99 },
+                    { mealType: 'Dinner', foodType: 'Steak', image: 'steak.jpg', title: 'Grilled Steak', description: 'Tender steak with herbs', price: 15.99 },
+                    { mealType: 'Dinner', foodType: 'Pasta', image: 'pasta.jpg', title: 'Spaghetti Bolognese', description: 'Spaghetti with rich bolognese sauce', price: 12.99 },
+                    { mealType: 'Dinner', foodType: 'Fish', image: 'fish.jpg', title: 'Grilled Salmon', description: 'Salmon fillet with lemon butter', price: 14.99 },
+                    { mealType: 'Breakfast', foodType: 'Bagel', image: 'bagel.jpg', title: 'Bagel with Cream Cheese', description: 'Toasted bagel with cream cheese', price: 3.49 },
+                    { mealType: 'Lunch', foodType: 'Pizza', image: 'pizza.jpg', title: 'Margherita Pizza', description: 'Classic margherita pizza with basil', price: 9.99 },
+                    { mealType: 'Dinner', foodType: 'Chicken', image: 'chicken.jpg', title: 'Roast Chicken', description: 'Roast chicken with vegetables', price: 13.99 }
+                ]; %>
+                <% items.forEach((item, i) => { %>
+                    <div class="menu-item bg-white border border-gray-100 transition transform duration-700 hover:shadow-xl hover:scale-105 p-4 rounded-lg relative" data-meal-type="<%= item.mealType %>">
+                        <span class="bg-red-100 border border-red-500 rounded-full text-primary text-sm poppins px-4 py-1 inline-block mb-4 "><%= item.foodType %></span>
+                        <img class="w-64 mx-auto transform transition duration-300 hover:scale-105" src="<%= item.image %>" alt="" />
+                        <div class="flex flex-col items-center my-3 space-y-2">
+                            <h1 class="text-gray-900 poppins text-lg"><%= item.title %></h1>
+                            <p class="text-gray-500 poppins text-sm text-center"><%= item.description.slice(0,50) %></p>
+                            <h2 class="text-gray-900 poppins text-2xl font-bold">$<%= item.price %></h2>
+                            <button class="bg-primary text-white px-8 py-2 focus:outline-none poppins rounded-full mt-24 transform transition duration-300 hover:scale-105" onClick="handleRoute">Order Now</button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+        
+        <script>
+            function handleMenuTabs(selectedTab) {
+                const tabs = ['Breakfast', 'Lunch', 'Dinner'];
+                tabs.forEach(tab => {
+                    const tabElement = document.getElementById(`${tab.toLowerCase()}-tab`);
+                    if (tab === selectedTab) {
+                        tabElement.classList.add('text-blue-500', 'border-b-2', 'border-blue-500');
+                    } else {
+                        tabElement.classList.remove('text-blue-500', 'border-b-2', 'border-blue-500');
+                    }
+                });
+        
+                // Filtrer les éléments du menu
+                const menuItems = document.querySelectorAll('.menu-item');
+                menuItems.forEach(item => {
+                    if (item.getAttribute('data-meal-type') === selectedTab) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+        
+            // Initialiser l'affichage sur le premier onglet
+            document.addEventListener('DOMContentLoaded', () => {
+                handleMenuTabs('Breakfast');
+            });
+        </script>
+
         <%- include('partials/footer/footer') %>
     </body>
 </html>
