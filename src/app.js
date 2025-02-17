@@ -8,8 +8,8 @@ import measurementUnitRoutes from './routes/measurementUnit.js';
 import recipes from './routes/recipes.js';
 import auth from './routes/auth.js';
 import generator from './routes/generator.js';
+import views from './routes/views.js';
 import './services/cron.js';
-import { renderIngredientsPage } from './controllers/ingredients.js';
 import { handle404, handleErrors } from './middlewares/errorHandler.js';
 
 const app = express();
@@ -32,23 +32,7 @@ app.use(`${baseRoute}/measurement-units`, measurementUnitRoutes);
 app.use(`${baseRoute}/recipes`, recipes);
 app.use(`${baseRoute}/generator`, generator);
 app.use(`${baseRoute}/auth`, auth);
-
-app.get('/', (req, res) => {
-    const user = {
-        displayName: 'John Doe',
-        photoURL: '/path/to/photo.jpg'
-    };
-    const logo = '/path/to/logo.png';
-    const order = { length: 3 };
-    const changeHeader = false;
-
-    res.render('index', {
-        user,
-        logo,
-        order,
-        changeHeader
-    });
-});
+app.use('/', views);
 
 app.use(handle404);
 app.use(handleErrors);
