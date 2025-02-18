@@ -1,0 +1,43 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="./output.css" rel="stylesheet">
+        <title>Sign in</title>
+    </head>
+    <body class="bg-white">
+        <%- include('partials/header', { user, order }) %>
+
+        <main class="h-screen w-full banner">
+            <div class="flex flex-col justify-center items-center h-screen">
+                <!-- logo  -->
+                <%- include('partials/form/brand') %>
+                <!-- sign up form  -->
+                <form class="bg-white w-96 mt-6 p-4 rounded-lg shadow-lg" onsubmit="handleSubmit(event)">
+                    <div class="flex flex-col space-y-6">
+                        <% inputs.forEach(function(input) { %>
+                            <input 
+                                type="<%= input.type %>" 
+                                placeholder="<%= input.placeholder %>" 
+                                value="<%= input.value %>" 
+                                name="<%= input.name %>" 
+                                class="w-full px-4 py-3 rounded-lg ring-red-200 focus:ring-4 focus:outline-none glass transition duration-300 border border-gray-300 focus:shadow-xl"
+                                onchange="handleChange(event)"
+                            />
+                        <% }) %>
+                    </div>
+                    <%- include('partials/form/button', {text: 'Sign in'}) %>
+                    <a href="/signin">
+                        <p class="text-base text-primary text-center my-6 hover:underline">Already have an account ?</p>
+                    </a>
+                </form>
+            </div>
+        </main>
+        
+        <%- include('partials/footer/footer') %>
+    </body>
+</html>
+
+

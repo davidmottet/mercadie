@@ -16,6 +16,14 @@ const config = {
     secret: process.env.JWT_SECRET || "defaultsecretkey",
     expiresIn: "1h",
   },
+  session: {
+    secret: process.env.SESSION_SECRET || 'votre_secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production'
+    }
+  },
   api: {
     version: "v1",
     basePath: "/api",

@@ -12,24 +12,64 @@
 
         <main class="h-screen w-full banner">
             <div class="flex flex-col justify-center items-center h-screen">
-                <div class="flex flex-grow">
-                    <img class="w-36 cursor-pointer" src="./logo.png" alt="logo" onclick="window.location.href='/'" />
-                </div>
-                <form class="bg-white w-96 mt-6 p-4 rounded-lg shadow-lg" onSubmit={handleSubmit}>
+                <!-- logo  -->
+                <%- include('partials/form/brand') %>
+                <!-- sign up form  -->
+                <form class="bg-white w-96 mt-6 p-4 rounded-lg shadow-lg" id="signinForm">
                     <div class="flex flex-col space-y-6">
-                        
+                        <% inputs.forEach(function(input) { %>
+                            <input 
+                                type="<%= input.type %>" 
+                                placeholder="<%= input.placeholder %>" 
+                                value="<%= input.value %>" 
+                                name="<%= input.name %>" 
+                                class="w-full px-4 py-3 rounded-lg ring-red-200 focus:ring-4 focus:outline-none glass transition duration-300 border border-gray-300 focus:shadow-xl"
+                                onchange="handleChange(event)"
+                            />
+                        <% }) %>
                     </div>
-                    <Button text="Sign In" />
-                    <Link to="/signup">
+                    <%- include('partials/form/button', { text: 'Sign In'}) %>
+                    <a href="/signup">
                         <p class="text-base text-primary text-center my-6 hover:underline">Need an account ?</p>
-                    </Link>
-
-                    <GoogleSignIn text="Sign In With Google" />
+                    </a>
                 </form>
             </div>
         </main>
 
         <%- include('partials/footer/footer') %>
+
+        <script>
+            document.getElementById('signinForm').addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    const response = await fetch('/api/v1/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        alert(errorData.message || 'Erreur lors de la connexion');
+                        return;
+                    }
+
+                    const result = await response.json();
+                    sessionStorage.setItem('token', result.token);
+                    alert('Connexion réussie');
+                    window.location.href = '/';
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la connexion');
+                }
+            });
+        </script>
     </body>
 </html>
 
