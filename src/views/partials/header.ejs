@@ -3,16 +3,16 @@
         <div class="flex flex-grow">
             <img class="w-36 cursor-pointer" src="./logo.png" alt="logo" onclick="window.location.href='/'" />
         </div>
-        <% if (user.displayName) { %>
+        <% if (user.username) { %>
             <div class="flex items-center justify-end space-x-4">
                 <a href="/admin" class="text-gray-600">Admin</a>
                 <div class="relative flex cursor-pointer" onclick="window.location.href='/orders'">
                     <span class="bg-primary w-6 h-6 rounded-full flex items-center justify-center text-white absolute -right-2 -top-2"><%= order.length %></span>
                     <i class="cursor-pointer w-6 h-6 text-gray-700">🛒</i>
                 </div>
-                <img src="<%= user.photoURL %>" alt="<%= user.displayName %>" class="w-10 h-10 rounded-full" />
-                <p class="text-gray-700 hidden md:block lg:block"><%= user.displayName %></p>
-                <i class="cursor-pointer w-6 h-6 text-gray-700" onclick="signOutUser()">🔓</i>
+                <img src="<%= user.photoURL %>" alt="<%= user.username %>" class="w-10 h-10 rounded-full" />
+                <p class="text-gray-700 hidden md:block lg:block"><%= user.username %></p>
+                <i class="cursor-pointer w-6 h-6 text-gray-700" onclick="logoutUser()">🔓</i>
             </div>
         <% } else { %>
             <div class="flex items-center justify-end space-x-6">
@@ -36,4 +36,29 @@
             }
         });
     });
+
+    function logoutUser() {
+        fetch('/api/v1/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur lors de la déconnexion');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message || 'Déconnexion réussie');
+            sessionStorage.removeItem('token');
+            window.location.href = '/signin';
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Erreur lors de la déconnexion');
+        });
+    }
 </script>

@@ -4,18 +4,21 @@ import { authMiddleware, requireRole } from '../middlewares/auth.js';
 const router = express.Router();
 
 router.get('/', (req, res) => {
+    const user = req.session.user || {};
     const order = { length: 3 };
     const changeHeader = false;
 
+    console.log(user)
+
     res.render('index', {
-        user: {},
+        user,
         order,
         changeHeader
     });
 });
 
 router.get('/signin', (req, res) => {
-    const user = req.user || {};
+    const user = req.session.user || {};
     const order = req.order || { length: 0 };
     const inputs = [
         { id: 1, type: "email", placeholder: "Email", value: `${user?.email ? user?.email : ''}`, name: 'email' },
@@ -26,7 +29,7 @@ router.get('/signin', (req, res) => {
 });
 
 router.get('/signup', (req, res) => {
-    const user = req.user || {};
+    const user = req.session.user || {};
     const order = req.order || { length: 0 };
     const inputs = [
         { id: 1, type: "text", placeholder: "Name", value: `${user?.name ? user?.name : ''}`, name: 'name' },

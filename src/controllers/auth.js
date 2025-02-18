@@ -45,6 +45,7 @@ export const login = async (req, res) => {
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
+    req.session.user = userWithoutPassword;
     res.json({ user: userWithoutPassword, token });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -54,7 +55,13 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    // Invalider le token dans la base de données
     await Session.updateOne({ token }, { isValid: false });
+
+    // Détruire la session
+    req.session = null;
+    res.clearCookie('connect.sid');
     res.json({ message: 'Déconnexion réussie' });
   } catch (error) {
     res.status(500).json({ message: error.message });

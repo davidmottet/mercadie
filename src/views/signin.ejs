@@ -15,7 +15,7 @@
                 <!-- logo  -->
                 <%- include('partials/form/brand') %>
                 <!-- sign up form  -->
-                <form class="bg-white w-96 mt-6 p-4 rounded-lg shadow-lg" onSubmit={handleSubmit}>
+                <form class="bg-white w-96 mt-6 p-4 rounded-lg shadow-lg" id="signinForm">
                     <div class="flex flex-col space-y-6">
                         <% inputs.forEach(function(input) { %>
                             <input 
@@ -37,6 +37,39 @@
         </main>
 
         <%- include('partials/footer/footer') %>
+
+        <script>
+            document.getElementById('signinForm').addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    const response = await fetch('/api/v1/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        alert(errorData.message || 'Erreur lors de la connexion');
+                        return;
+                    }
+
+                    const result = await response.json();
+                    sessionStorage.setItem('token', result.token);
+                    alert('Connexion réussie');
+                    window.location.href = '/';
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la connexion');
+                }
+            });
+        </script>
     </body>
 </html>
 
