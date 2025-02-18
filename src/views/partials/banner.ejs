@@ -2,9 +2,66 @@
     <div class="flex flex-col items-center justify-center h-full">
         <h1 class="text-center text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-700">Best food waiting for your belly</h1>
 
-        <div class="rounded-full p-1 box-border mt-8 bg-white overflow-hidden ring-red-300 focus:ring-4 w-96 flex items-center">
-            <input type="text" class="rounded-full px-4 focus:outline-none w-full bg-transparent" placeholder="Search here ......." />
-            <button class="text-sm bg-blue-500 py-3 px-6 rounded-full text-white ring-red-300 focus:ring-4 transition duration-300 hover:scale-105 transform">Search</button>
-        </div>
+        <form class="rounded-full p-1 box-border mt-8 bg-white overflow-hidden ring-red-300 focus:ring-4 w-96 flex items-center" id="ingredientForm">
+            <input type="text" id="ingredient" name="ingredient" class="rounded-full px-4 focus:outline-none w-full bg-transparent" placeholder="Search here ......." required />
+            <button type="submit" class="text-sm bg-blue-500 py-3 px-6 rounded-full text-white ring-red-300 focus:ring-4 transition duration-300 hover:scale-105 transform">Search</button>
+        </form>
     </div>
 </section>
+
+<!-- Loader -->
+<div id="loader" class="flex justify-center items-center mt-10" style="display: none;">
+    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+</div>
+<!-- Section pour afficher le résultat, initialement masquée -->
+<div id="result" class="mt-10 max-w-md mx-auto p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md" style="display: none;">
+    <!-- Les résultats de l'API seront affichés ici -->
+</div>
+
+<script>
+    document.getElementById('ingredientForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const ingredient = document.getElementById('ingredient').value;
+        const loader = document.getElementById('loader');
+        const resultDiv = document.getElementById('result');
+        // Afficher le loader et masquer le résultat
+        loader.style.display = 'flex';
+        resultDiv.style.display = 'none';
+        try {
+            const response = await fetch('/api/v1/generator/ingredient', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ingredient })
+            });
+            const data = await response.json();
+            // Masquer le loader et afficher le résultat
+            loader.style.display = 'none';
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Résultat pour l'ingrédient: ${data.name}</h2>
+                <ul class="mt-4 text-gray-700 dark:text-gray-300">
+                    <li><strong>ID:</strong> ${data._id}</li>
+                    <li><strong>Nom:</strong> ${data.displayName}</li>
+                    <li><strong>Nom Pluriel:</strong> ${data.displayPlural}</li>
+                    <li><strong>Congelé ou en conserve:</strong> ${data.frozenOrCanned ? 'Oui' : 'Non'}</li>
+                    <li><strong>Saisons:</strong> ${data.seasons.join(', ')}</li>
+                    <li><strong>Avec Porc:</strong> ${data.withPork ? 'Oui' : 'Non'}</li>
+                    <li><strong>Inaltérable:</strong> ${data.unbreakable ? 'Oui' : 'Non'}</li>
+                    <li><strong>Ignorer la liste de courses:</strong> ${data.ignoreShoppingList ? 'Oui' : 'Non'}</li>
+                    <li><strong>Étagère de magasin:</strong> ${data.storeShelf}</li>
+                    <li><strong>Quantité:</strong> ${data.quantity}</li>
+                    <li><strong>Unité de mesure:</strong> ${data.measurementUnit}</li>
+                    <li><strong>Poids brut:</strong> ${data.grossWeight}</li>
+                    <li><strong>Sources:</strong> ${data.sources.join(', ')}</li>
+                    <li><strong>Date de génération:</strong> ${new Date(data.date_generation).toLocaleString()}</li>
+                </ul>
+            `;
+        } catch (error) {
+            loader.style.display = 'none';
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<p class="text-red-500">Erreur lors de la récupération des données.</p>`;
+        }
+    });
+</script>

@@ -1,12 +1,7 @@
-import OpenAI from 'openai';
 import { translate } from '@vitalets/google-translate-api';
-import config from '../../config/default.js';
+import getAIProvider from '../services/aiProvider.js';
 import Ingredient from '../models/ingredient.js';
 import MeasurementUnit from '../models/measurementUnit.js';
-
-const openai = new OpenAI({
-  apiKey: config.ia.openAi.key
-});
 
 // Fonction pour générer dynamiquement le SYSTEM_PROMPT
 function generateSystemPrompt () {
@@ -30,7 +25,7 @@ function generateSystemPrompt () {
 function getExampleValue (field) {
   switch (field.instance) {
 		case 'String':
-			return `"Exemple de texte"`;
+			return `"String"`;
 		case 'Number':
 			return 0;
 		case 'Boolean':
@@ -64,6 +59,8 @@ async function checkIngredientExistence(name) {
 export const generateIngredient = async (req, res) => {
   const { ingredient } = req.body;
   try {
+    const aiProvider = getAIProvider('openai');
+
     const translation = await translate(ingredient, { to: 'en' });
     const translatedIngredient = translation.text.toLowerCase();
 
@@ -77,17 +74,7 @@ export const generateIngredient = async (req, res) => {
       });
     }
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Create a full profile for ${translatedIngredient}, translate to English, and return it.` }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.2
-    });
-
-    const data = JSON.parse(completion.choices[0].message.content);
+    const data = await aiProvider.generateCompletion(SYSTEM_PROMPT);
 
     if (!('name' in data) || !('quantity' in data)) {
       throw new Error('Structure JSON invalide');
@@ -110,7 +97,16 @@ export const generateIngredient = async (req, res) => {
     }
     data.measurementUnit = measurementUnitDoc._id;
 
-    const newIngredient = new Ingredient(data);
+    const lowerCaseData = {};
+    for (const key in data) {
+        if (typeof data[key] === 'string') {
+            lowerCaseData[key] = data[key].toLowerCase();
+        } else {
+            lowerCaseData[key] = data[key];
+        }
+    }
+
+    const newIngredient = new Ingredient(lowerCaseData);
     await newIngredient.save();
 
     res.json({
