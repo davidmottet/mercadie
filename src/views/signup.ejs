@@ -15,7 +15,7 @@
                 <!-- logo  -->
                 <%- include('partials/form/brand') %>
                 <!-- sign up form  -->
-                <form class="bg-white w-96 mt-6 p-4 rounded-lg shadow-lg" onSubmit={handleSubmit}>
+                <form class="bg-white w-96 mt-6 p-4 rounded-lg shadow-lg" onsubmit="handleSubmit(event)">
                     <div class="flex flex-col space-y-6">
                         <% inputs.forEach(function(input) { %>
                             <input 
@@ -28,14 +28,14 @@
                             />
                         <% }) %>
                     </div>
-                    <%- include('partials/form/button', { text: 'Sign In'}) %>
-                    <a href="/signup">
-                        <p class="text-base text-primary text-center my-6 hover:underline">Need an account ?</p>
+                    <%- include('partials/form/button', {text: 'Sign in'}) %>
+                    <a href="/signin">
+                        <p class="text-base text-primary text-center my-6 hover:underline">Already have an account ?</p>
                     </a>
                 </form>
             </div>
         </main>
-
+        
         <%- include('partials/footer/footer') %>
     </body>
 </html>
