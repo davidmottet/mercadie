@@ -183,6 +183,12 @@ Pour configurer MongoDB avec Docker, suivez ces étapes :
    --restart unless-stopped \
    mongo
    ```
+Si vous avez mongo en local lancer le script 
+   ``` bash
+   chmod +x setup_mongodb.sh
+   ./setup_mongodb.sh mon_utilisateur mon_mot_de_passe
+   ./setup_mongodb.sh --help
+   ```
 
 2. **Configurer les variables d'environnement**
 
