@@ -68,7 +68,8 @@ function validateAndCompleteData(data) {
         ignoreShoppingList: false,
         storeShelf: 1,
         quantity: 1,
-        grossWeight: 1
+        grossWeight: 1,
+        type: 'other'
     };
 
     // S'assurer que tous les champs requis sont présents

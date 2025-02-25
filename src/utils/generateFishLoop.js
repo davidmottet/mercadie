@@ -65,7 +65,8 @@ function validateAndCompleteData(data) {
         ignoreShoppingList: false,
         storeShelf: 2, // Rayon réfrigéré/congelé
         quantity: 1,
-        grossWeight: 150 // Portion standard de poisson en grammes
+        grossWeight: 150, // Portion standard de poisson en grammes
+        type: 'fish' // Définir le type comme poisson
     };
 
     // S'assurer que tous les champs requis sont présents

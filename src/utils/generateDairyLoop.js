@@ -66,7 +66,8 @@ function validateAndCompleteData(data) {
         ignoreShoppingList: false,
         storeShelf: 3, // Rayon produits laitiers
         quantity: 1,
-        grossWeight: 100 // Portion standard en grammes
+        grossWeight: 100, // Portion standard en grammes
+        type: 'dairy' // Définir le type comme produit laitier
     };
 
     // S'assurer que tous les champs requis sont présents

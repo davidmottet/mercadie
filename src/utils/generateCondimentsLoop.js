@@ -66,7 +66,8 @@ function validateAndCompleteData(data) {
         ignoreShoppingList: false,
         storeShelf: 5, // Rayon condiments
         quantity: 1,
-        grossWeight: 15 // Portion standard en grammes/millilitres
+        grossWeight: 15, // Portion standard en grammes/millilitres
+        type: 'condiment' // Définir le type comme condiment
     };
 
     // S'assurer que tous les champs requis sont présents

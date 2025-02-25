@@ -66,7 +66,8 @@ function validateAndCompleteData(data) {
         ignoreShoppingList: false,
         storeShelf: 4, // Rayon épicerie sèche
         quantity: 1,
-        grossWeight: 100 // Portion standard en grammes
+        grossWeight: 100, // Portion standard en grammes
+        type: 'grain' // Définir le type comme céréale/grain
     };
 
     // S'assurer que tous les champs requis sont présents

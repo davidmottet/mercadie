@@ -18,6 +18,12 @@ const ingredientSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  type: {
+    type: String,
+    enum: ['meat', 'fish', 'vegetable', 'fruit', 'dairy', 'grain', 'spice', 'beverage', 'condiment', 'other'],
+    default: 'other',
+    index: true
+  },
   frozenOrCanned: {
     type: Boolean,
     required: true

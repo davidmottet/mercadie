@@ -66,7 +66,8 @@ function validateAndCompleteData(data) {
         ignoreShoppingList: false,
         storeShelf: 2, // Rayon viandes/réfrigéré
         quantity: 1,
-        grossWeight: 150 // Portion standard de viande en grammes
+        grossWeight: 150, // Portion standard de viande en grammes
+        type: 'meat' // Définir le type comme viande
     };
 
     // S'assurer que tous les champs requis sont présents

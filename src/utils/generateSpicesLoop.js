@@ -66,7 +66,8 @@ function validateAndCompleteData(data) {
         ignoreShoppingList: false,
         storeShelf: 5, // Rayon épices
         quantity: 1,
-        grossWeight: 5 // Portion standard en grammes (petite pour les épices)
+        grossWeight: 5, // Portion standard en grammes (petite pour les épices)
+        type: 'spice' // Définir le type comme épice
     };
 
     // S'assurer que tous les champs requis sont présents

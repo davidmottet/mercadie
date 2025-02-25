@@ -66,7 +66,8 @@ function validateAndCompleteData(data) {
         ignoreShoppingList: false,
         storeShelf: 6, // Rayon boissons
         quantity: 1,
-        grossWeight: 250 // Portion standard en millilitres
+        grossWeight: 250, // Portion standard en millilitres
+        type: 'beverage' // Définir le type comme boisson
     };
 
     // S'assurer que tous les champs requis sont présents

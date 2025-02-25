@@ -65,7 +65,8 @@ function validateAndCompleteData(data) {
         ignoreShoppingList: false,
         storeShelf: 1, // Rayon fruits et légumes
         quantity: 1,
-        grossWeight: 100 // Portion standard de fruit en grammes
+        grossWeight: 100, // Portion standard de fruit en grammes
+        type: 'fruit' // Définir le type comme fruit
     };
 
     // S'assurer que tous les champs requis sont présents
