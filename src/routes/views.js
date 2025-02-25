@@ -1,5 +1,6 @@
 import express from 'express';
 import { authMiddleware, requireRole } from '../middlewares/auth.js';
+import Ingredient from '../models/ingredient.js';
 
 const router = express.Router();
 
@@ -39,6 +40,24 @@ router.get('/signup', (req, res) => {
     ]
 
     res.render('signup', { user, order, inputs });
+});
+
+router.get('/ingredients', async (req, res) => {
+    const user = req.session.user || {};
+    const order = req.order || { length: 0 };
+    
+    try {
+        // Assuming you have an ingredients service or model to fetch the data
+        const ingredients = await Ingredient.find();
+        res.render('ingredients', { user, order, ingredients });
+    } catch (error) {
+        console.error('Error fetching ingredients:', error);
+        res.status(500).render('error', { 
+            message: 'Une erreur est survenue lors de la récupération des ingrédients',
+            user,
+            order
+        });
+    }
 });
 
 export default router;
