@@ -1,20 +1,41 @@
-<section class="header-banner h-96 w-full bg-yellow-50">
-    <div class="flex flex-col items-center justify-center h-full">
-        <h1 class="text-center text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-700">Best food waiting for your belly</h1>
+<section class="header-banner h-96 w-full bg-gradient-to-r from-blue-50 to-teal-50 dark:from-gray-800 dark:to-gray-900">
+    <div class="flex flex-col items-center justify-center h-full px-4">
+        <h1 class="text-center text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 dark:text-white mb-4">Découvrez des plats délicieux</h1>
+        <p class="text-center text-gray-600 dark:text-gray-300 max-w-2xl mb-8">Trouvez les meilleurs ingrédients pour vos recettes préférées</p>
 
-        <form class="rounded-full p-1 box-border mt-8 bg-white overflow-hidden ring-red-300 focus:ring-4 w-96 flex items-center" id="ingredientForm">
-            <input type="text" id="ingredient" name="ingredient" class="rounded-full px-4 focus:outline-none w-full bg-transparent" placeholder="Search here ......." required />
-            <button type="submit" class="text-sm bg-blue-500 py-3 px-6 rounded-full text-white ring-red-300 focus:ring-4 transition duration-300 hover:scale-105 transform">Search</button>
+        <form class="relative w-full max-w-md" id="ingredientForm">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="ingredient" 
+                    name="ingredient" 
+                    class="w-full px-5 py-4 pl-12 pr-16 rounded-full border border-gray-300 dark:border-gray-700 
+                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 
+                           dark:text-white shadow-md" 
+                    placeholder="Rechercher un ingrédient..." 
+                    required 
+                />
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <button 
+                    type="submit" 
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-full transition duration-300 cursor-pointer"
+                >
+                    Rechercher
+                </button>
+            </div>
         </form>
     </div>
 </section>
 
 <!-- Loader -->
 <div id="loader" class="flex justify-center items-center mt-10" style="display: none;">
-    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+    <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
 </div>
+
 <!-- Section pour afficher le résultat, initialement masquée -->
-<div id="result" class="mt-10 max-w-md mx-auto p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md" style="display: none;">
+<div id="result" class="mt-10 max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md" style="display: none;">
     <!-- Les résultats de l'API seront affichés ici -->
 </div>
 
@@ -24,9 +45,11 @@
         const ingredient = document.getElementById('ingredient').value;
         const loader = document.getElementById('loader');
         const resultDiv = document.getElementById('result');
+        
         // Afficher le loader et masquer le résultat
         loader.style.display = 'flex';
         resultDiv.style.display = 'none';
+        
         try {
             const response = await fetch('/api/v1/generator/ingredient', {
                 method: 'POST',
@@ -35,33 +58,116 @@
                 },
                 body: JSON.stringify({ ingredient })
             });
+            
             const data = await response.json();
+            
             // Masquer le loader et afficher le résultat
             loader.style.display = 'none';
             resultDiv.style.display = 'block';
+            
+            // Générer des badges colorés pour les saisons
+            const seasonBadges = data.seasons.map(season => {
+                let seasonColor = '';
+                switch(season) {
+                    case 'Printemps': seasonColor = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'; break;
+                    case 'Été': seasonColor = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'; break;
+                    case 'Automne': seasonColor = 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'; break;
+                    case 'Hiver': seasonColor = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'; break;
+                    default: seasonColor = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+                }
+                return `<span class="px-2 py-0.5 rounded-full text-xs ${seasonColor} mr-1">${season}</span>`;
+            }).join('');
+            
+            // Déterminer l'icône appropriée
+            let icon = 'fa-carrot';
+            if (data.frozenOrCanned) {
+                icon = 'fa-snowflake';
+            } else if (data.seasons.includes('Été')) {
+                icon = 'fa-sun';
+            } else if (data.seasons.includes('Hiver')) {
+                icon = 'fa-snowflake';
+            }
+            
             resultDiv.innerHTML = `
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Résultat pour l'ingrédient: ${data.name}</h2>
-                <ul class="mt-4 text-gray-700 dark:text-gray-300">
-                    <li><strong>ID:</strong> ${data._id}</li>
-                    <li><strong>Nom:</strong> ${data.displayName}</li>
-                    <li><strong>Nom Pluriel:</strong> ${data.displayPlural}</li>
-                    <li><strong>Congelé ou en conserve:</strong> ${data.frozenOrCanned ? 'Oui' : 'Non'}</li>
-                    <li><strong>Saisons:</strong> ${data.seasons.join(', ')}</li>
-                    <li><strong>Avec Porc:</strong> ${data.withPork ? 'Oui' : 'Non'}</li>
-                    <li><strong>Inaltérable:</strong> ${data.unbreakable ? 'Oui' : 'Non'}</li>
-                    <li><strong>Ignorer la liste de courses:</strong> ${data.ignoreShoppingList ? 'Oui' : 'Non'}</li>
-                    <li><strong>Étagère de magasin:</strong> ${data.storeShelf}</li>
-                    <li><strong>Quantité:</strong> ${data.quantity}</li>
-                    <li><strong>Unité de mesure:</strong> ${data.measurementUnit}</li>
-                    <li><strong>Poids brut:</strong> ${data.grossWeight}</li>
-                    <li><strong>Sources:</strong> ${data.sources.join(', ')}</li>
-                    <li><strong>Date de génération:</strong> ${new Date(data.date_generation).toLocaleString()}</li>
-                </ul>
+                <div class="p-1 bg-gradient-to-r from-blue-500 to-teal-400 rounded-t-xl -mt-6 -mx-6 mb-6"></div>
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-4">
+                        <i class="fas ${icon} text-blue-500 dark:text-blue-300 text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">${data.displayName || data.name}</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="space-y-2">
+                        <p class="text-gray-700 dark:text-gray-300 flex items-center">
+                            <span class="w-6 text-gray-400"><i class="fas fa-font"></i></span>
+                            <span class="font-medium mr-2">Nom Pluriel:</span> 
+                            <span>${data.displayPlural || 'N/A'}</span>
+                        </p>
+                        
+                        <p class="text-gray-700 dark:text-gray-300 flex items-center">
+                            <span class="w-6 text-gray-400"><i class="fas ${data.frozenOrCanned ? 'fa-snowflake' : 'fa-leaf'}"></i></span>
+                            <span class="font-medium mr-2">Conservation:</span>
+                            <span class="${data.frozenOrCanned ? 'text-blue-500 dark:text-blue-300' : 'text-green-500 dark:text-green-300'}">
+                                ${data.frozenOrCanned ? 'Congelé/Conserve' : 'Frais'}
+                            </span>
+                        </p>
+                        
+                        <p class="text-gray-700 dark:text-gray-300 flex items-center">
+                            <span class="w-6 text-gray-400"><i class="fas fa-calendar-alt"></i></span>
+                            <span class="font-medium mr-2">Saisons:</span>
+                            <span class="flex flex-wrap gap-1">
+                                ${seasonBadges}
+                            </span>
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <p class="text-gray-700 dark:text-gray-300 flex items-center">
+                            <span class="w-6 text-gray-400"><i class="fas fa-balance-scale"></i></span>
+                            <span class="font-medium mr-2">Quantité:</span> 
+                            <span>${data.quantity} ${data.measurementUnit}</span>
+                        </p>
+                        
+                        <p class="text-gray-700 dark:text-gray-300 flex items-center">
+                            <span class="w-6 text-gray-400"><i class="fas fa-weight-hanging"></i></span>
+                            <span class="font-medium mr-2">Poids brut:</span> 
+                            <span>${data.grossWeight} g</span>
+                        </p>
+                        
+                        <p class="text-gray-700 dark:text-gray-300 flex items-center">
+                            <span class="w-6 text-gray-400"><i class="fas fa-store"></i></span>
+                            <span class="font-medium mr-2">Étagère:</span> 
+                            <span>${data.storeShelf || 'N/A'}</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <p class="text-gray-700 dark:text-gray-300 text-sm">
+                        <span class="font-medium">Date de génération:</span> 
+                        ${new Date(data.date_generation).toLocaleString()}
+                    </p>
+                    <div class="mt-4 flex justify-end">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition duration-300 flex items-center text-sm cursor-pointer">
+                            <i class="fas fa-plus mr-2"></i>
+                            Ajouter à ma liste
+                        </button>
+                    </div>
+                </div>
             `;
         } catch (error) {
             loader.style.display = 'none';
             resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<p class="text-red-500">Erreur lors de la récupération des données.</p>`;
+            resultDiv.innerHTML = `
+                <div class="p-6 text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900 mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 dark:text-red-300 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Erreur lors de la récupération des données</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Impossible de trouver l'ingrédient demandé. Veuillez réessayer avec un autre terme.</p>
+                </div>
+            `;
         }
     });
 </script>
