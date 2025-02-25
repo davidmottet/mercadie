@@ -59,7 +59,7 @@ async function checkIngredientExistence(name) {
 export const generateIngredient = async (req, res) => {
   const { ingredient } = req.body;
   try {
-    const aiProvider = getAIProvider('openai');
+    const aiProvider = getAIProvider('ollama');
 
     const translation = await translate(ingredient, { to: 'en' });
     const translatedIngredient = translation.text.toLowerCase();
