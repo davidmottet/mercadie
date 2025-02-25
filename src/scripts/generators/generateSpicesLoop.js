@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import config from '../../config/default.js';
-import getAIProvider from '../services/aiProvider.js';
-import Ingredient from '../models/ingredient.js';
-import MeasurementUnit from '../models/measurementUnit.js';
+import config from '../../../config/default.js';
+import getAIProvider from '../../services/aiProvider.js';
+import Ingredient from '../../models/ingredient.js';
+import MeasurementUnit from '../../models/measurementUnit.js';
 
 // Liste initiale d'épices et herbes pour amorcer la génération
 const SPICES_SUGGESTIONS = [

@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import config from '../../config/default.js';
-import getAIProvider from '../services/aiProvider.js';
-import Ingredient from '../models/ingredient.js';
+import config from '../../../config/default.js';
+import getAIProvider from '../../services/aiProvider.js';
+import Ingredient from '../../models/ingredient.js';
 import fs from 'fs';
 import path from 'path';
 
