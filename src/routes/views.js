@@ -9,8 +9,6 @@ router.get('/', (req, res) => {
     const order = { length: 3 };
     const changeHeader = false;
 
-    console.log(user)
-
     res.render('index', {
         user,
         order,
