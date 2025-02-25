@@ -31,6 +31,11 @@ const config = {
   ia: {
     openAi: {
       key: process.env.OPENAI_API_KEY || "defaultsecretkey"
+    },
+    ollama: {
+      url: process.env.OLLAMA_URL || "ollama.com",
+      port: process.env.OLLAMA_PORT || "11434",
+      model: process.env.OLLAMA_MODEL || "llama3.2:1b"
     }
   },
   log: {
