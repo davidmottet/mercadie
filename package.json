@@ -12,7 +12,16 @@
     "lint": "eslint 'src/**/*.js?(x)'",
     "lint:fix": "eslint 'src/**/*.js?(x)' --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate:ingredients": "node -r dotenv/config src/utils/generateIngredientsLoop.js"
+    "generate:ingredients": "node -r dotenv/config src/utils/generateIngredientsLoop.js",
+    "generate:fish": "node -r dotenv/config src/utils/generateFishLoop.js",
+    "generate:fruits": "node -r dotenv/config src/utils/generateFruitsLoop.js",
+    "generate:vegetables": "node -r dotenv/config src/utils/generateVegetablesLoop.js",
+    "generate:meats": "node -r dotenv/config src/utils/generateMeatsLoop.js",
+    "generate:dairy": "node -r dotenv/config src/utils/generateDairyLoop.js",
+    "generate:grains": "node -r dotenv/config src/utils/generateGrainsLoop.js",
+    "generate:spices": "node -r dotenv/config src/utils/generateSpicesLoop.js",
+    "generate:beverages": "node -r dotenv/config src/utils/generateBeveragesLoop.js",
+    "generate:condiments": "node -r dotenv/config src/utils/generateCondimentsLoop.js"
   },
   "repository": {
     "type": "git",

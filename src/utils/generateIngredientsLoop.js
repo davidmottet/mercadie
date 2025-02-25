@@ -118,14 +118,21 @@ async function generateSingleIngredient(ingredientName) {
 
         // Gérer l'unité de mesure
         let measurementUnit = data.measurementUnit || 'unit';
-        measurementUnit = measurementUnit.toLowerCase();
+
+        // Vérifier que measurementUnit est une chaîne de caractères
+        if (typeof measurementUnit !== 'string') {
+            console.log(`⚠️ Unité de mesure invalide "${measurementUnit}", utilisation de "unit" par défaut`);
+            measurementUnit = 'unit';
+        } else {
+            measurementUnit = measurementUnit.toLowerCase();
+        }
 
         // Valider l'unité de mesure
         if (!VALID_MEASUREMENT_UNITS.includes(measurementUnit)) {
             console.log(`⚠️ Unité de mesure invalide "${measurementUnit}", utilisation de "unit" par défaut`);
             measurementUnit = 'unit';
         }
-        
+
         let measurementUnitDoc = await MeasurementUnit.findOne({ name: measurementUnit });
         if (!measurementUnitDoc) {
             measurementUnitDoc = new MeasurementUnit({ 
