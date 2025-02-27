@@ -30,7 +30,8 @@
     "validate:ingredients:ai:fix": "node -r dotenv/config src/scripts/validators/validateIngredientsWithAI.js --fix",
     "validate:ingredients:ai:export": "node -r dotenv/config src/scripts/validators/validateIngredientsWithAI.js --export",
     "validate:ingredients:ai:full": "node -r dotenv/config src/scripts/validators/validateIngredientsWithAI.js --fix --export",
-    "validate:ingredients:ai:sample": "node -r dotenv/config src/scripts/validators/validateIngredientsWithAI.js --limit 10"
+    "validate:ingredients:ai:sample": "node -r dotenv/config src/scripts/validators/validateIngredientsWithAI.js --limit 10",
+    "validate:ingredients:ai:persistent": "node -r dotenv/config src/scripts/validators/validateIngredientsWithAI.js --max-retries 10"
   },
   "repository": {
     "type": "git",

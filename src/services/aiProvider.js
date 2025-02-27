@@ -82,6 +82,7 @@ class OllamaProvider extends AIProvider {
                     throw new Error('Invalid JSON response from Ollama');
                 }
             } catch (error) {
+                console.log('error', error);
                 console.error(`Attempt ${attempt} failed:`, error.message);
                 lastError = error;
 
