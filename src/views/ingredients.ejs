@@ -30,24 +30,42 @@
             
             <!-- Filtres -->
             <div class="flex flex-wrap justify-center gap-3 mb-6">
-                <button class="filter-btn active px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition">
+                <button class="filter-btn active px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition cursor-pointer" data-filter="all">
+                    <i class="fas fa-th-large mr-1"></i>
                     Tous
                 </button>
-                <button class="filter-btn px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                <button class="filter-btn px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer" data-filter="fruit">
+                    <i class="fas fa-apple-alt mr-1"></i>
                     Fruits
                 </button>
-                <button class="filter-btn px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                <button class="filter-btn px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer" data-filter="vegetable">
+                    <i class="fas fa-carrot mr-1"></i>
                     Légumes
                 </button>
-                <button class="filter-btn px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                <button class="filter-btn px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer" data-filter="spice">
+                    <i class="fas fa-pepper-hot mr-1"></i>
                     Épices
+                </button>
+                <button class="filter-btn px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer" data-filter="frozen">
+                    <i class="fas fa-snowflake mr-1"></i>
+                    Congelés
                 </button>
             </div>
         </header>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="ingredientsContainer">
             <% ingredients.forEach(ingredient => { %>
-                <div class="ingredient-card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <% 
+                // Utiliser directement le type du modèle au lieu de la détection manuelle
+                let category = ingredient.type || 'other';
+                
+                // Ajouter la catégorie "congelé" si applicable
+                const frozenCategory = ingredient.frozenOrCanned ? 'frozen' : '';
+                %>
+                <div class="ingredient-card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300" 
+                     data-name="<%= ingredient.displayName || ingredient.name %>" 
+                     data-category="<%= category %>" 
+                     data-frozen="<%= frozenCategory %>">
                     <div class="p-1 bg-gradient-to-r from-blue-500 to-teal-400"></div>
                     <div class="p-6">
                         <div class="flex items-center mb-4">
@@ -55,10 +73,20 @@
                             let icon = 'fa-carrot';
                             if (ingredient.frozenOrCanned) {
                                 icon = 'fa-snowflake';
-                            } else if (ingredient.seasons.includes('Été')) {
-                                icon = 'fa-sun';
-                            } else if (ingredient.seasons.includes('Hiver')) {
-                                icon = 'fa-snowflake';
+                            } else {
+                                // Assigner l'icône en fonction du type
+                                switch(category) {
+                                    case 'fruit': icon = 'fa-apple-alt'; break;
+                                    case 'vegetable': icon = 'fa-carrot'; break;
+                                    case 'spice': icon = 'fa-pepper-hot'; break;
+                                    case 'meat': icon = 'fa-drumstick-bite'; break;
+                                    case 'fish': icon = 'fa-fish'; break;
+                                    case 'dairy': icon = 'fa-cheese'; break;
+                                    case 'grain': icon = 'fa-bread-slice'; break;
+                                    case 'beverage': icon = 'fa-glass-whiskey'; break;
+                                    case 'condiment': icon = 'fa-flask'; break;
+                                    default: icon = 'fa-utensils';
+                                }
                             }
                             %>
                             <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
@@ -125,32 +153,189 @@
     </div>
 
     <script>
-        // Fonctionnalité de recherche
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fonctionnalité de recherche
+            const searchInput = document.getElementById('searchInput');
             const cards = document.querySelectorAll('.ingredient-card');
+            let currentFilter = 'all';
             
-            cards.forEach(card => {
-                const title = card.querySelector('h2').textContent.toLowerCase();
-                if (title.includes(searchTerm)) {
-                    card.style.display = '';
-                } else {
+            // Configuration du lazy loading
+            const ITEMS_PER_PAGE = 20;
+            let currentPage = 1;
+            let filteredCards = [...cards];
+            let isLoading = false;
+            
+            // Fonction initiale pour afficher seulement les premiers éléments
+            function initLazyLoading() {
+                // Cacher toutes les cartes initialement
+                cards.forEach(card => {
                     card.style.display = 'none';
+                });
+                
+                // Afficher seulement les premiers éléments
+                showPage(1);
+                
+                // Ajouter l'écouteur d'événement pour le défilement
+                window.addEventListener('scroll', handleScroll);
+            }
+            
+            // Fonction pour gérer le défilement et charger plus d'éléments
+            function handleScroll() {
+                if (isLoading) return;
+                
+                // Calculer si on est proche du bas de la page
+                const scrollTop = window.scrollY;
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                
+                if (scrollTop + windowHeight >= documentHeight - 300) {
+                    loadMoreItems();
                 }
-            });
-        });
-        
-        // Fonctionnalité des filtres (à implémenter selon vos besoins)
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-blue-500', 'text-white'));
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-200'));
+            }
+            
+            // Fonction pour charger plus d'éléments
+            function loadMoreItems() {
+                isLoading = true;
                 
-                this.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-200');
-                this.classList.add('active', 'bg-blue-500', 'text-white');
+                // Simuler un délai de chargement (optionnel)
+                setTimeout(() => {
+                    showPage(currentPage + 1);
+                    isLoading = false;
+                }, 300);
+            }
+            
+            // Fonction pour afficher une page spécifique
+            function showPage(page) {
+                const startIndex = (page - 1) * ITEMS_PER_PAGE;
+                const endIndex = startIndex + ITEMS_PER_PAGE;
                 
-                // Logique de filtrage à implémenter selon vos catégories d'ingrédients
+                // Afficher les éléments de cette page
+                for (let i = startIndex; i < endIndex && i < filteredCards.length; i++) {
+                    filteredCards[i].style.display = '';
+                }
+                
+                currentPage = page;
+                
+                // Afficher ou masquer le message "Aucun résultat"
+                updateNoResultsMessage();
+            }
+            
+            searchInput.addEventListener('input', function(e) {
+                filterCards();
             });
+            
+            // Fonctionnalité des filtres
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Mise à jour de l'apparence des boutons
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('active', 'bg-blue-500', 'text-white');
+                        b.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-200');
+                    });
+                    
+                    this.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-200');
+                    this.classList.add('active', 'bg-blue-500', 'text-white');
+                    
+                    // Mise à jour du filtre actuel
+                    currentFilter = this.getAttribute('data-filter');
+                    
+                    // Appliquer le filtrage
+                    filterCards();
+                });
+            });
+            
+            // Fonction pour filtrer les cartes selon la recherche et la catégorie
+            function filterCards() {
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                // Réinitialiser l'affichage pour le filtrage
+                filteredCards = [];
+                
+                cards.forEach(card => {
+                    const title = card.getAttribute('data-name').toLowerCase();
+                    const category = card.getAttribute('data-category');
+                    const isFrozen = card.getAttribute('data-frozen');
+                    
+                    // Cacher toutes les cartes initialement
+                    card.style.display = 'none';
+                    
+                    // Vérifier si la carte correspond au terme de recherche
+                    const matchesSearch = title.includes(searchTerm);
+                    
+                    // Vérifier si la carte correspond au filtre de catégorie
+                    let matchesFilter = false;
+                    if (currentFilter === 'all') {
+                        matchesFilter = true;
+                    } else if (currentFilter === 'frozen') {
+                        matchesFilter = isFrozen === 'frozen';
+                    } else {
+                        matchesFilter = category === currentFilter;
+                    }
+                    
+                    // Ajouter à la liste filtrée si elle correspond aux critères
+                    if (matchesSearch && matchesFilter) {
+                        filteredCards.push(card);
+                    }
+                });
+                
+                // Réinitialiser la pagination et afficher la première page
+                currentPage = 0;
+                showPage(1);
+                
+                // Afficher un indicateur de chargement (optionnel)
+                const container = document.getElementById('ingredientsContainer');
+                if (filteredCards.length > ITEMS_PER_PAGE) {
+                    // Ajouter un indicateur de chargement si nécessaire
+                    if (!container.querySelector('.loading-indicator')) {
+                        const loadingIndicator = document.createElement('div');
+                        loadingIndicator.className = 'loading-indicator col-span-full text-center py-6';
+                        loadingIndicator.innerHTML = `
+                            <div class="inline-flex items-center">
+                                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span class="text-gray-600 dark:text-gray-400">Chargement des ingrédients...</span>
+                            </div>
+                        `;
+                        container.appendChild(loadingIndicator);
+                    }
+                } else {
+                    // Supprimer l'indicateur de chargement s'il existe
+                    const loadingIndicator = container.querySelector('.loading-indicator');
+                    if (loadingIndicator) {
+                        container.removeChild(loadingIndicator);
+                    }
+                }
+            }
+            
+            // Fonction pour mettre à jour le message "Aucun résultat"
+            function updateNoResultsMessage() {
+                const container = document.getElementById('ingredientsContainer');
+                
+                // Supprimer l'ancien message "Aucun résultat" s'il existe
+                const oldMessage = container.querySelector('.no-results-message');
+                if (oldMessage) {
+                    container.removeChild(oldMessage);
+                }
+                
+                // Ajouter un message si aucun résultat
+                if (filteredCards.length === 0) {
+                    const noResultsMessage = document.createElement('div');
+                    noResultsMessage.className = 'no-results-message col-span-full text-center py-10';
+                    noResultsMessage.innerHTML = `
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+                            <i class="fas fa-search text-gray-400 dark:text-gray-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucun ingrédient trouvé</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Essayez de modifier vos critères de recherche</p>
+                    `;
+                    container.appendChild(noResultsMessage);
+                }
+            }
+            
+            // Initialiser le lazy loading au chargement de la page
+            initLazyLoading();
         });
     </script>
 
