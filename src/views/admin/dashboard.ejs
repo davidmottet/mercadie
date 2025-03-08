@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration des Scripts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .script-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .script-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .log-container {
+            max-height: 500px;
+            overflow-y: auto;
+            background-color: #1e1e1e;
+            color: #f8f8f8;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .log-line {
+            margin: 0;
+            padding: 2px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+        .log-stdout {
+            color: #f8f8f8;
+        }
+        .log-stderr {
+            color: #ff6b6b;
+        }
+        .log-system {
+            color: #69c0ff;
+            font-weight: bold;
+        }
+        .log-timestamp {
+            color: #aaa;
+            font-size: 0.8em;
+            margin-right: 10px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        .nav-tabs .nav-link {
+            cursor: pointer;
+        }
+        .process-badge {
+            font-size: 0.8em;
+        }
+        .badge-running {
+            background-color: #28a745;
+        }
+        .badge-completed {
+            background-color: #17a2b8;
+        }
+        .badge-error {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-gray-800 shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a class="text-white text-xl font-semibold" href="#">Administration des Scripts</a>
+            <a href="/" class="px-4 py-2 text-sm text-white border border-white rounded hover:bg-white hover:text-gray-800 transition-colors">Retour au site</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 mt-8">
+        <div class="bg-white rounded-lg shadow">
+            <div class="border-b border-gray-200">
+                <nav class="flex -mb-px" aria-label="Tabs">
+                    <button class="px-6 py-3 border-b-2 border-blue-500 text-blue-600 whitespace-nowrap flex items-center text-sm font-medium" id="validators-tab" role="tab">
+                        Validators
+                        <span class="ml-2 py-0.5 px-2 text-xs bg-gray-200 rounded-full"><%= validators.length %></span>
+                    </button>
+                    <button class="px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap flex items-center text-sm font-medium" id="generators-tab" role="tab">
+                        Generators
+                        <span class="ml-2 py-0.5 px-2 text-xs bg-gray-200 rounded-full"><%= generators.length %></span>
+                    </button>
+                    <button class="px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap flex items-center text-sm font-medium" id="processes-tab" role="tab">
+                        Processus en cours
+                        <span class="ml-2 py-0.5 px-2 text-xs bg-gray-200 rounded-full process-count"><%= processes.length %></span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-4" id="scriptTabsContent">
+                <!-- Validators Tab -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="validators" role="tabpanel">
+                    <% validators.forEach(script => { %>
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow transform hover:-translate-y-1 duration-200">
+                            <div class="p-4">
+                                <h5 class="text-lg font-semibold mb-2"><%= script.name %></h5>
+                                <p class="text-sm text-gray-600 mb-4">
+                                    <span class="block"><i class="fas fa-file-code"></i> <%= script.size %></span>
+                                    <span class="block"><i class="fas fa-clock"></i> Modifié le <%= script.modified %></span>
+                                </p>
+                                <button class="run-script px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm flex items-center" data-script-type="validators" data-script-name="<%= script.name %>">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Exécuter
+                                </button>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <!-- Generators Tab -->
+                <div class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="generators" role="tabpanel">
+                    <% generators.forEach(script => { %>
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow transform hover:-translate-y-1 duration-200">
+                            <div class="p-4">
+                                <h5 class="text-lg font-semibold mb-2"><%= script.name %></h5>
+                                <p class="text-sm text-gray-600 mb-4">
+                                    <span class="block"><i class="fas fa-file-code"></i> <%= script.size %></span>
+                                    <span class="block"><i class="fas fa-clock"></i> Modifié le <%= script.modified %></span>
+                                </p>
+                                <button class="run-script px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm flex items-center" data-script-type="generators" data-script-name="<%= script.name %>">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Exécuter
+                                </button>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <!-- Processes Tab -->
+                <div class="hidden" id="processes" role="tabpanel">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200" id="processesTable">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Script</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Démarré le</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <% if (processes.length === 0) { %>
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Aucun processus en cours</td>
+                                    </tr>
+                                <% } else { %>
+                                    <% processes.forEach(process => { %>
+                                        <tr data-process-id="<%= process.id %>">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= process.id %></td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= process.script %></td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= process.startTime %></td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <% if (process.status === 'En cours') { %>
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">En cours</span>
+                                                <% } else if (process.status === 'Terminé') { %>
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Terminé</span>
+                                                <% } else { %>
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Erreur</span>
+                                                <% } %>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                                <button class="view-logs inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-process-id="<%= process.id %>">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                    </svg>
+                                                    Logs
+                                                </button>
+                                                <% if (process.status === 'En cours') { %>
+                                                    <button class="stop-process inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-process-id="<%= process.id %>">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6"/>
+                                                        </svg>
+                                                        Arrêter
+                                                    </button>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Run Script Modal -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden" id="runScriptModal">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900" id="runScriptModalLabel">Exécuter le script</h3>
+                </div>
+                <form id="runScriptForm" class="px-6 py-4">
+                    <input type="hidden" id="scriptType" name="scriptType">
+                    <input type="hidden" id="scriptName" name="scriptName">
+                    
+                    <div class="mb-4">
+                        <label for="scriptArgs" class="block text-sm font-medium text-gray-700 mb-2">Arguments (optionnels)</label>
+                        <input type="text" id="scriptArgs" name="args" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="--fix --export --verbose">
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <p class="text-sm font-medium text-gray-700 mb-2">Arguments courants :</p>
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <p><code class="bg-gray-100 px-1 rounded">--fix</code> : Appliquer les corrections automatiquement</p>
+                            <p><code class="bg-gray-100 px-1 rounded">--export</code> : Exporter les résultats en CSV</p>
+                            <p><code class="bg-gray-100 px-1 rounded">--limit N</code> : Limiter le nombre d'éléments traités</p>
+                            <p><code class="bg-gray-100 px-1 rounded">--verbose</code> : Afficher les logs détaillés</p>
+                            <p><code class="bg-gray-100 px-1 rounded">--start-from "nom"</code> : Reprendre à partir d'un élément spécifique</p>
+                            <p><code class="bg-gray-100 px-1 rounded">--max-consecutive-timeouts N</code> : Nombre de timeouts avant arrêt</p>
+                        </div>
+                    </div>
+                </form>
+                <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="closeRunScriptModal">Annuler</button>
+                    <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="submitRunScript">Exécuter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Modal -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden" id="logsModal">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-lg shadow-xl max-w-6xl w-full mx-4">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900" id="logsModalLabel">Logs du processus</h3>
+                </div>
+                <div class="p-6">
+                    <div id="logContainer" class="log-container rounded-lg p-4">
+                        <p class="log-line log-system">Chargement des logs...</p>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="closeLogsModal">Fermer</button>
+                    <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="refreshLogs">Rafraîchir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables globales
+            let currentProcessId = null;
+            let logsInterval = null;
+            
+            // Gestion des onglets
+            const tabs = ['validators', 'generators', 'processes'];
+            tabs.forEach(tabId => {
+                document.getElementById(`${tabId}-tab`).addEventListener('click', () => {
+                    tabs.forEach(t => {
+                        const tab = document.getElementById(t);
+                        const tabButton = document.getElementById(`${t}-tab`);
+                        if (t === tabId) {
+                            tab.classList.remove('hidden');
+                            tabButton.classList.add('border-blue-500', 'text-blue-600');
+                            tabButton.classList.remove('border-transparent', 'text-gray-500');
+                        } else {
+                            tab.classList.add('hidden');
+                            tabButton.classList.remove('border-blue-500', 'text-blue-600');
+                            tabButton.classList.add('border-transparent', 'text-gray-500');
+                        }
+                    });
+                });
+            });
+
+            // Gestion des modals
+            function showModal(modalId) {
+                document.getElementById(modalId).classList.remove('hidden');
+            }
+
+            function hideModal(modalId) {
+                document.getElementById(modalId).classList.add('hidden');
+            }
+
+            // Gestion du modal d'exécution de script
+            document.querySelectorAll('.run-script').forEach(button => {
+                button.addEventListener('click', function() {
+                    const scriptType = this.getAttribute('data-script-type');
+                    const scriptName = this.getAttribute('data-script-name');
+                    
+                    document.getElementById('scriptType').value = scriptType;
+                    document.getElementById('scriptName').value = scriptName;
+                    document.getElementById('runScriptModalLabel').textContent = `Exécuter ${scriptName}`;
+                    showModal('runScriptModal');
+                });
+            });
+
+            document.getElementById('closeRunScriptModal').addEventListener('click', () => {
+                hideModal('runScriptModal');
+            });
+
+            document.getElementById('closeLogsModal').addEventListener('click', () => {
+                hideModal('logsModal');
+                if (logsInterval) {
+                    clearInterval(logsInterval);
+                    logsInterval = null;
+                }
+                currentProcessId = null;
+            });
+
+            // Soumettre le formulaire d'exécution de script
+            document.getElementById('submitRunScript').addEventListener('click', function() {
+                const scriptType = document.getElementById('scriptType').value;
+                const scriptName = document.getElementById('scriptName').value;
+                const args = document.getElementById('scriptArgs').value;
+                
+                fetch('/api/v1/admin/scripts/run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        scriptType,
+                        scriptName,
+                        args
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Fermer le modal
+                        hideModal('runScriptModal');
+                        
+                        // Ajouter le processus à la liste
+                        addProcessToTable({
+                            id: data.processId,
+                            script: scriptName,
+                            startTime: new Date().toLocaleString(),
+                            status: 'En cours'
+                        });
+                        
+                        // Mettre à jour le compteur de processus
+                        updateProcessCount();
+                        
+                        // Afficher un message de succès
+                        alert(`Script ${scriptName} lancé avec succès !`);
+                        
+                        // Basculer vers l'onglet des processus
+                        document.getElementById('processes-tab').click();
+                    } else {
+                        alert(`Erreur: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Une erreur est survenue lors de l\'exécution du script.');
+                });
+            });
+            
+            // Afficher les logs d'un processus
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('view-logs') || e.target.closest('.view-logs')) {
+                    const button = e.target.classList.contains('view-logs') ? e.target : e.target.closest('.view-logs');
+                    const processId = button.getAttribute('data-process-id');
+                    currentProcessId = processId;
+                    
+                    // Charger les logs
+                    loadProcessLogs(processId);
+                    showModal('logsModal');
+                    
+                    // Mettre en place un intervalle pour rafraîchir les logs
+                    if (logsInterval) {
+                        clearInterval(logsInterval);
+                    }
+                    logsInterval = setInterval(() => {
+                        if (currentProcessId) {
+                            loadProcessLogs(currentProcessId);
+                        }
+                    }, 2000);
+                }
+            });
+            
+            // Rafraîchir les logs manuellement
+            document.getElementById('refreshLogs').addEventListener('click', function() {
+                if (currentProcessId) {
+                    loadProcessLogs(currentProcessId);
+                }
+            });
+            
+            // Arrêter un processus
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('stop-process') || e.target.closest('.stop-process')) {
+                    const button = e.target.classList.contains('stop-process') ? e.target : e.target.closest('.stop-process');
+                    const processId = button.getAttribute('data-process-id');
+                    
+                    if (confirm('Êtes-vous sûr de vouloir arrêter ce processus ?')) {
+                        fetch(`/api/v1/admin/scripts/process/${processId}/stop`, {
+                            method: 'POST'
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Processus arrêté avec succès !');
+                                // Mettre à jour l'interface
+                                const row = document.querySelector(`tr[data-process-id="${processId}"]`);
+                                if (row) {
+                                    const statusCell = row.querySelector('td:nth-child(4)');
+                                    statusCell.innerHTML = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Arrêté</span>';
+                                    
+                                    const actionsCell = row.querySelector('td:nth-child(5)');
+                                    actionsCell.innerHTML = `
+                                        <button class="view-logs inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-process-id="${processId}">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                            </svg>
+                                            Logs
+                                        </button>
+                                    `;
+                                }
+                            } else {
+                                alert(`Erreur: ${data.message}`);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur:', error);
+                            alert('Une erreur est survenue lors de l\'arrêt du processus.');
+                        });
+                    }
+                }
+            });
+            
+            // Fonction pour charger les logs d'un processus
+            function loadProcessLogs(processId) {
+                const logContainer = document.getElementById('logContainer');
+                logContainer.innerHTML = '<p class="log-line log-system">Chargement des logs...</p>';
+                
+                fetch(`/api/v1/admin/scripts/process/${processId}/logs`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        logContainer.innerHTML = `<p class="log-line log-stderr">Erreur: ${data.message}</p>`;
+                        return;
+                    }
+                    
+                    logContainer.innerHTML = '';
+                    
+                    if (!data.logs || data.logs.length === 0) {
+                        logContainer.innerHTML = '<p class="log-line log-system">Aucun log disponible pour le moment.</p>';
+                        return;
+                    }
+                    
+                    data.logs.forEach(log => {
+                        const logLine = document.createElement('p');
+                        logLine.className = `log-line log-${log.type}`;
+                        
+                        const timestamp = new Date(log.timestamp).toLocaleTimeString('fr-FR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            fractionalSecondDigits: 3
+                        });
+                        
+                        const timestampSpan = document.createElement('span');
+                        timestampSpan.className = 'log-timestamp';
+                        timestampSpan.textContent = timestamp;
+                        
+                        logLine.appendChild(timestampSpan);
+                        
+                        // Gérer les retours à la ligne dans le message
+                        const messageLines = log.message.split('\n');
+                        messageLines.forEach((line, index) => {
+                            if (index > 0) {
+                                logLine.appendChild(document.createElement('br'));
+                            }
+                            logLine.appendChild(document.createTextNode(line));
+                        });
+                        
+                        logContainer.appendChild(logLine);
+                    });
+                    
+                    // Faire défiler jusqu'en bas seulement si on était déjà en bas
+                    const isScrolledToBottom = logContainer.scrollHeight - logContainer.clientHeight <= logContainer.scrollTop + 1;
+                    if (isScrolledToBottom) {
+                        logContainer.scrollTop = logContainer.scrollHeight;
+                    }
+                    
+                    // Mettre à jour le statut du processus dans la liste
+                    if (data.status) {
+                        updateProcessStatus(processId, data.status);
+                        
+                        // Si le processus est terminé, arrêter le rafraîchissement
+                        if (data.status !== 'running') {
+                            clearInterval(logsInterval);
+                            logsInterval = null;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    logContainer.innerHTML = `<p class="log-line log-stderr">Erreur lors du chargement des logs: ${error.message}</p>`;
+                });
+            }
+            
+            // Fonction pour ajouter un processus à la table
+            function addProcessToTable(process) {
+                const table = document.getElementById('processesTable');
+                const tbody = table.querySelector('tbody');
+                
+                // Supprimer le message "Aucun processus en cours" s'il existe
+                const emptyRow = tbody.querySelector('tr td[colspan="5"]');
+                if (emptyRow) {
+                    emptyRow.parentNode.remove();
+                }
+                
+                // Créer une nouvelle ligne
+                const row = document.createElement('tr');
+                row.setAttribute('data-process-id', process.id);
+                row.className = 'bg-white divide-y divide-gray-200';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${process.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${process.script}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${process.startTime}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">En cours</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <button class="view-logs inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-process-id="${process.id}">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Logs
+                        </button>
+                        <button class="stop-process inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-process-id="${process.id}">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6"/>
+                            </svg>
+                            Arrêter
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            }
+            
+            // Fonction pour mettre à jour le statut d'un processus
+            function updateProcessStatus(processId, status) {
+                const row = document.querySelector(`tr[data-process-id="${processId}"]`);
+                if (row) {
+                    const statusCell = row.querySelector('td:nth-child(4)');
+                    const actionsCell = row.querySelector('td:nth-child(5)');
+                    
+                    if (status === 'running') {
+                        statusCell.innerHTML = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">En cours</span>';
+                        
+                        // S'assurer que le bouton d'arrêt est présent
+                        if (!actionsCell.querySelector('.stop-process')) {
+                            actionsCell.innerHTML += `
+                                <button class="stop-process inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-process-id="${processId}">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6"/>
+                                    </svg>
+                                    Arrêter
+                                </button>
+                            `;
+                        }
+                    } else if (status === 'completed') {
+                        statusCell.innerHTML = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Terminé</span>';
+                        
+                        // Supprimer le bouton d'arrêt
+                        const stopButton = actionsCell.querySelector('.stop-process');
+                        if (stopButton) {
+                            stopButton.remove();
+                        }
+                    } else {
+                        statusCell.innerHTML = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Erreur</span>';
+                        
+                        // Supprimer le bouton d'arrêt
+                        const stopButton = actionsCell.querySelector('.stop-process');
+                        if (stopButton) {
+                            stopButton.remove();
+                        }
+                    }
+                }
+            }
+            
+            // Fonction pour mettre à jour le compteur de processus
+            function updateProcessCount() {
+                const table = document.getElementById('processesTable');
+                const rows = table.querySelectorAll('tbody tr');
+                const count = rows.length - (table.querySelector('tbody tr td[colspan="5"]') ? 1 : 0);
+                
+                document.querySelector('.process-count').textContent = count;
+            }
+        });
+    </script>
+</body>
+</html> 

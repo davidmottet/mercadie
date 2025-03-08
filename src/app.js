@@ -10,6 +10,7 @@ import recipes from './routes/recipes.js';
 import auth from './routes/auth.js';
 import generator from './routes/generator.js';
 import views from './routes/views.js';
+import admin from './routes/admin.js';
 import './services/cron.js';
 import { handle404, handleErrors } from './middlewares/errorHandler.js';
 
@@ -34,6 +35,7 @@ app.use(`${baseRoute}/measurement-units`, measurementUnitRoutes);
 app.use(`${baseRoute}/recipes`, recipes);
 app.use(`${baseRoute}/generator`, generator);
 app.use(`${baseRoute}/auth`, auth);
+app.use(`${baseRoute}/admin`, admin);
 app.use('/', views);
 
 app.use(handle404);

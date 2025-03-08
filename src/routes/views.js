@@ -1,6 +1,7 @@
 import express from 'express';
 import { authMiddleware, requireRole } from '../middlewares/auth.js';
 import Ingredient from '../models/ingredient.js';
+import { showAdminDashboard } from '../controllers/adminController.js';
 
 const router = express.Router();
 
@@ -57,5 +58,7 @@ router.get('/ingredients', async (req, res) => {
         });
     }
 });
+
+router.get('/admin', showAdminDashboard);
 
 export default router;

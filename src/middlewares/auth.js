@@ -30,6 +30,7 @@ export const requireRole = (roleName) => {
   return async (req, res, next) => {
     const user = await User.findById(req.user.id).populate('roles');
     const hasRole = user.roles.some(role => role.name === roleName);
+    console.log(user);
 
     if (!hasRole) {
       return res.status(403).json({ message: 'Permission refusée' });
