@@ -1,72 +1,59 @@
 import Ingredient from '../models/ingredient.js';
 
 export const createIngredient = async (req, res) => {
-  try {
-    const ingredient = new Ingredient(req.body);
-    await ingredient.save();
-    res.status(201).json(ingredient);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
+  const ingredient = new Ingredient(req.body);
+  await ingredient.save();
+  res.status(201).json(ingredient);
 };
 
 export const getIngredients = async (req, res) => {
-  try {
-    const ingredients = await Ingredient.find()
-      .populate('measurementUnit');
-    res.json(ingredients);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  const ingredients = await Ingredient.find()
+    .populate('measurementUnit');
+  res.json(ingredients);
 };
 
 export const getIngredientById = async (req, res) => {
-  try {
-    const ingredient = await Ingredient.findById(req.params.id)
-      .populate('measurementUnit');
-    if (!ingredient) {
-      return res.status(404).json({ message: 'Ingredient not found' });
-    }
-    res.json(ingredient);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  const ingredient = await Ingredient.findById(req.params.id)
+    .populate('measurementUnit');
+  
+  if (!ingredient) {
+    const error = new Error('Ingrédient non trouvé');
+    error.statusCode = 404;
+    throw error;
   }
+  
+  res.json(ingredient);
 };
 
 export const updateIngredient = async (req, res) => {
-  try {
-    const ingredient = await Ingredient.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    ).populate('measurementUnit');
+  const ingredient = await Ingredient.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true, runValidators: true }
+  ).populate('measurementUnit');
 
-    if (!ingredient) {
-      return res.status(404).json({ message: 'Ingredient not found' });
-    }
-    res.json(ingredient);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+  if (!ingredient) {
+    const error = new Error('Ingrédient non trouvé');
+    error.statusCode = 404;
+    throw error;
   }
+  
+  res.json(ingredient);
 };
 
 export const deleteIngredient = async (req, res) => {
-  try {
-    const ingredient = await Ingredient.findByIdAndDelete(req.params.id);
-    if (!ingredient) {
-      return res.status(404).json({ message: 'Ingredient not found' });
-    }
-    res.json({ message: 'Ingredient deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  const ingredient = await Ingredient.findByIdAndDelete(req.params.id);
+  
+  if (!ingredient) {
+    const error = new Error('Ingrédient non trouvé');
+    error.statusCode = 404;
+    throw error;
   }
+  
+  res.json({ message: 'Ingrédient supprimé avec succès' });
 };
 
 export const renderIngredientsPage = async (req, res) => {
-  try {
-    const ingredients = await Ingredient.find().populate('measurementUnit');
-    res.render('ingredients', { ingredients });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  const ingredients = await Ingredient.find().populate('measurementUnit');
+  res.render('ingredients', { ingredients });
 };

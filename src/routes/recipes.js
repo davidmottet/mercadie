@@ -1,5 +1,6 @@
 import express from 'express';
 import { authMiddleware, requireRole } from '../middlewares/auth.js';
+import { asyncApiHandler } from '../middlewares/asyncHandler.js';
 import {
   createRecipe,
   getRecipes,
@@ -10,10 +11,10 @@ import {
 
 const router = express.Router();
 
-router.get('/', authMiddleware, getRecipes);
-router.get('/:id', authMiddleware, getRecipeById);
-router.post('/', authMiddleware, requireRole('admin'), createRecipe);
-router.put('/:id', authMiddleware, requireRole('admin'), updateRecipe);
-router.delete('/:id', authMiddleware, requireRole('admin'), deleteRecipe);
+router.get('/', authMiddleware, asyncApiHandler(getRecipes));
+router.get('/:id', authMiddleware, asyncApiHandler(getRecipeById));
+router.post('/', authMiddleware, requireRole('admin'), asyncApiHandler(createRecipe));
+router.put('/:id', authMiddleware, requireRole('admin'), asyncApiHandler(updateRecipe));
+router.delete('/:id', authMiddleware, requireRole('admin'), asyncApiHandler(deleteRecipe));
 
 export default router;

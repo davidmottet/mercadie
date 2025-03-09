@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreur <%= statusCode %> | MercadIE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen font-[Inter]">
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-md w-full space-y-6">
+            <!-- En-tête avec l'icône et le code d'erreur -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <h1 class="text-4xl font-bold text-gray-900 mb-2">Erreur <%= statusCode %></h1>
+                <p class="text-gray-600 text-lg"><%= message %></p>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="flex flex-col gap-3">
+                <a href="/" class="inline-flex justify-center items-center px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Retour à l'accueil
+                </a>
+                <button onclick="window.history.back()" class="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                    Retour à la page précédente
+                </button>
+            </div>
+
+            <!-- Stack trace en mode développement -->
+            <% if (locals.stack && process.env.NODE_ENV === 'development') { %>
+                <div class="mt-8 border-t pt-6">
+                    <h2 class="text-sm font-semibold text-gray-900 mb-2">Détails de l'erreur (mode développement)</h2>
+                    <div class="bg-gray-50 rounded-lg p-4 overflow-x-auto">
+                        <pre class="text-xs text-gray-600 whitespace-pre-wrap"><%= stack %></pre>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>© <%= new Date().getFullYear() %> MercadIE. Tous droits réservés.</p>
+        </footer>
+    </div>
+</body>
+</html> 

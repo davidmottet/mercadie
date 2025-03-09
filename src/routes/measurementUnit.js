@@ -1,5 +1,6 @@
 import express from 'express';
 import { authMiddleware, requireRole } from '../middlewares/auth.js';
+import { asyncApiHandler } from '../middlewares/asyncHandler.js';
 import {
   createMeasurementUnit,
   getMeasurementUnits,
@@ -10,10 +11,10 @@ import {
 
 const router = express.Router();
 
-router.get('/', authMiddleware, getMeasurementUnits);
-router.get('/:id', authMiddleware, getMeasurementUnitById);
-router.post('/', authMiddleware, requireRole('admin'), createMeasurementUnit);
-router.put('/:id', authMiddleware, requireRole('admin'), updateMeasurementUnit);
-router.delete('/:id', authMiddleware, requireRole('admin'), deleteMeasurementUnit);
+router.get('/', authMiddleware, asyncApiHandler(getMeasurementUnits));
+router.get('/:id', authMiddleware, asyncApiHandler(getMeasurementUnitById));
+router.post('/', authMiddleware, requireRole('admin'), asyncApiHandler(createMeasurementUnit));
+router.put('/:id', authMiddleware, requireRole('admin'), asyncApiHandler(updateMeasurementUnit));
+router.delete('/:id', authMiddleware, requireRole('admin'), asyncApiHandler(deleteMeasurementUnit));
 
 export default router;

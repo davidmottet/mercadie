@@ -1,56 +1,52 @@
 import MeasurementUnit from '../models/measurementUnit.js';
 
 export const createMeasurementUnit = async (req, res) => {
-  try {
-    const measurementUnit = new MeasurementUnit(req.body);
-    await measurementUnit.save();
-    res.status(201).send(measurementUnit);
-  } catch (error) {
-    res.status(400).send(error);
-  }
+  const measurementUnit = new MeasurementUnit(req.body);
+  await measurementUnit.save();
+  res.status(201).json(measurementUnit);
 };
 
 export const getMeasurementUnits = async (req, res) => {
-  try {
-    const measurementUnits = await MeasurementUnit.find({});
-    res.status(200).send(measurementUnits);
-  } catch (error) {
-    res.status(500).send(error);
-  }
+  const measurementUnits = await MeasurementUnit.find({});
+  res.json(measurementUnits);
 };
 
 export const getMeasurementUnitById = async (req, res) => {
-  try {
-    const measurementUnit = await MeasurementUnit.findById(req.params.id);
-    if (!measurementUnit) {
-      return res.status(404).send();
-    }
-    res.status(200).send(measurementUnit);
-  } catch (error) {
-    res.status(500).send(error);
+  const measurementUnit = await MeasurementUnit.findById(req.params.id);
+  
+  if (!measurementUnit) {
+    const error = new Error('Unité de mesure non trouvée');
+    error.statusCode = 404;
+    throw error;
   }
+  
+  res.json(measurementUnit);
 };
 
 export const updateMeasurementUnit = async (req, res) => {
-  try {
-    const measurementUnit = await MeasurementUnit.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!measurementUnit) {
-      return res.status(404).send();
-    }
-    res.status(200).send(measurementUnit);
-  } catch (error) {
-    res.status(400).send(error);
+  const measurementUnit = await MeasurementUnit.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true, runValidators: true }
+  );
+
+  if (!measurementUnit) {
+    const error = new Error('Unité de mesure non trouvée');
+    error.statusCode = 404;
+    throw error;
   }
+  
+  res.json(measurementUnit);
 };
 
 export const deleteMeasurementUnit = async (req, res) => {
-  try {
-    const measurementUnit = await MeasurementUnit.findByIdAndDelete(req.params.id);
-    if (!measurementUnit) {
-      return res.status(404).send();
-    }
-    res.status(200).send(measurementUnit);
-  } catch (error) {
-    res.status(500).send(error);
+  const measurementUnit = await MeasurementUnit.findByIdAndDelete(req.params.id);
+  
+  if (!measurementUnit) {
+    const error = new Error('Unité de mesure non trouvée');
+    error.statusCode = 404;
+    throw error;
   }
+  
+  res.json({ message: 'Unité de mesure supprimée avec succès' });
 };

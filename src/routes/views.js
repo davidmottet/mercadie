@@ -5,19 +5,35 @@ import { showAdminDashboard } from '../controllers/adminController.js';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+// Wrapper pour gérer les erreurs des vues
+const asyncViewHandler = (fn) => async (req, res, next) => {
+    try {
+        await fn(req, res, next);
+    } catch (error) {
+        // Si l'erreur n'a pas de code HTTP, on met 500 par défaut
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        // On ajoute les données de base pour le rendu des vues
+        error.user = req.session?.user || {};
+        error.order = req.order || { length: 0 };
+        next(error);
+    }
+};
+
+router.get('/', asyncViewHandler(async (req, res) => {
     const user = req.session.user || {};
     const order = { length: 3 };
     const changeHeader = false;
 
-    res.render('index', {
+    res.render('landing', {
         user,
         order,
         changeHeader
     });
-});
+}));
 
-router.get('/signin', (req, res) => {
+router.get('/signin', asyncViewHandler(async (req, res) => {
     const user = req.session.user || {};
     const order = req.order || { length: 0 };
     const inputs = [
@@ -26,9 +42,9 @@ router.get('/signin', (req, res) => {
     ]
 
     res.render('signin', { user, order, inputs });
-});
+}));
 
-router.get('/signup', (req, res) => {
+router.get('/signup', asyncViewHandler(async (req, res) => {
     const user = req.session.user || {};
     const order = req.order || { length: 0 };
     const inputs = [
@@ -39,26 +55,22 @@ router.get('/signup', (req, res) => {
     ]
 
     res.render('signup', { user, order, inputs });
-});
+}));
 
-router.get('/ingredients', async (req, res) => {
+router.get('/ingredients', asyncViewHandler(async (req, res) => {
     const user = req.session.user || {};
     const order = req.order || { length: 0 };
     
-    try {
-        // Assuming you have an ingredients service or model to fetch the data
-        const ingredients = await Ingredient.find();
-        res.render('ingredients', { user, order, ingredients });
-    } catch (error) {
-        console.error('Error fetching ingredients:', error);
-        res.status(500).render('error', { 
-            message: 'Une erreur est survenue lors de la récupération des ingrédients',
-            user,
-            order
-        });
+    const ingredients = await Ingredient.find().populate('measurementUnit');
+    if (!ingredients) {
+        const error = new Error('Impossible de récupérer les ingrédients');
+        error.statusCode = 500;
+        throw error;
     }
-});
+    
+    res.render('ingredients', { user, order, ingredients });
+}));
 
-router.get('/admin', showAdminDashboard);
+router.get('/admin', authMiddleware, requireRole('admin'), asyncViewHandler(showAdminDashboard));
 
 export default router;
