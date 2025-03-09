@@ -4,14 +4,14 @@ import config from '../../config/default.js';
 const isApiRequest = (req) => {
   // Vérifie si l'URL commence par /api
   if (req.path.startsWith('/api')) return true;
-  
+
   // Vérifie si c'est une requête XHR/AJAX
   if (req.xhr) return true;
-  
+
   // Vérifie les en-têtes Accept
   const acceptHeader = req.get('Accept') || '';
   if (acceptHeader.includes('application/json')) return true;
-  
+
   // Par défaut, considérer comme une requête de vue
   return false;
 };
@@ -43,7 +43,7 @@ const handleApiErrors = (err, _req, res) => {
 const handleViewErrors = (err, req, res) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Une erreur inattendue s'est produite";
-  
+
   // Utiliser les données d'erreur ou les valeurs par défaut
   const user = err.user || req.session?.user || {};
   const order = err.order || req.order || { length: 0 };
@@ -54,9 +54,9 @@ const handleViewErrors = (err, req, res) => {
     statusCode,
     user,
     order,
-    ...(config.app.environment === "development" && { 
+    ...(config.app.environment === "development" && {
       stack: err.stack,
-      details: err 
+      details: err
     })
   });
 
@@ -64,7 +64,7 @@ const handleViewErrors = (err, req, res) => {
 };
 
 // Middleware pour détecter si la requête est une API ou une vue
-const handleErrors = (err, req, res, next) => {
+const handleErrors = (err, req, res) => {
   if (isApiRequest(req)) {
     return handleApiErrors(err, req, res);
   }
@@ -84,7 +84,7 @@ const handleApi404 = (_req, res) => {
 const handleView404 = (req, res) => {
   const user = req.session?.user || {};
   const order = req.order || { length: 0 };
-  
+
   res.status(404).render('error', {
     message: "Page non trouvée",
     statusCode: 404,
@@ -94,7 +94,7 @@ const handleView404 = (req, res) => {
 };
 
 // Middleware pour gérer les 404
-const handle404 = (req, res, next) => {
+const handle404 = (req, res) => {
   if (isApiRequest(req)) {
     return handleApi404(req, res);
   }

@@ -15,13 +15,13 @@ export const getIngredients = async (req, res) => {
 export const getIngredientById = async (req, res) => {
   const ingredient = await Ingredient.findById(req.params.id)
     .populate('measurementUnit');
-  
+
   if (!ingredient) {
     const error = new Error('Ingrédient non trouvé');
     error.statusCode = 404;
     throw error;
   }
-  
+
   res.json(ingredient);
 };
 
@@ -37,19 +37,19 @@ export const updateIngredient = async (req, res) => {
     error.statusCode = 404;
     throw error;
   }
-  
+
   res.json(ingredient);
 };
 
 export const deleteIngredient = async (req, res) => {
   const ingredient = await Ingredient.findByIdAndDelete(req.params.id);
-  
+
   if (!ingredient) {
     const error = new Error('Ingrédient non trouvé');
     error.statusCode = 404;
     throw error;
   }
-  
+
   res.json({ message: 'Ingrédient supprimé avec succès' });
 };
 

@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import process from 'process';
 import mongoose from 'mongoose';
 import config from '../../../config/default.js';
 import Ingredient from '../../models/ingredient.js';
@@ -81,19 +82,19 @@ const TYPE_VALIDATION_RULES = {
 };
 
 // Fonction pour vérifier si un ingrédient est commun
-function isCommonIngredient(name) {
+function isCommonIngredient (name) {
   return COMMON_INGREDIENTS.some(common => name.includes(common));
 }
 
 // Fonction pour vérifier si un ingrédient contient du porc
-function containsPork(name) {
+function containsPork (name) {
   return PORK_KEYWORDS.some(keyword => name.includes(keyword));
 }
 
 // Fonction pour détecter le type d'ingrédient en fonction de son nom
-function detectIngredientType(name) {
+function detectIngredientType (name) {
   name = name.toLowerCase();
-  
+
   // Vérifier chaque type de mots-clés
   for (const [type, keywords] of Object.entries(TYPE_KEYWORDS)) {
     for (const keyword of keywords) {
@@ -102,30 +103,30 @@ function detectIngredientType(name) {
       }
     }
   }
-  
+
   // Si aucun type n'est détecté, retourner 'other'
   return 'other';
 }
 
 // Fonction pour suggérer des saisons appropriées pour un ingrédient
-function suggestSeasons(type, name) {
+function suggestSeasons (type, name) {
   // Par défaut, disponible toute l'année
   const allYear = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  
+
   // Pour les fruits et légumes, suggérer des saisons plus spécifiques
   if (type === 'fruit') {
     // Exemples de fruits d'été
-    if (name.includes('berry') || name.includes('melon') || name.includes('peach') || 
+    if (name.includes('berry') || name.includes('melon') || name.includes('peach') ||
         name.includes('cherry') || name.includes('apricot')) {
       return SEASONS.SUMMER;
     }
     // Exemples de fruits d'automne
-    else if (name.includes('apple') || name.includes('pear') || name.includes('grape') || 
+    else if (name.includes('apple') || name.includes('pear') || name.includes('grape') ||
              name.includes('fig') || name.includes('plum')) {
       return SEASONS.AUTUMN;
     }
     // Exemples de fruits d'hiver
-    else if (name.includes('orange') || name.includes('grapefruit') || 
+    else if (name.includes('orange') || name.includes('grapefruit') ||
              name.includes('clementine') || name.includes('kiwi')) {
       return SEASONS.WINTER;
     }
@@ -133,68 +134,68 @@ function suggestSeasons(type, name) {
     else if (name.includes('strawberry') || name.includes('rhubarb')) {
       return SEASONS.SPRING;
     }
-  } 
+  }
   else if (type === 'vegetable') {
     // Exemples de légumes d'été
-    if (name.includes('tomato') || name.includes('cucumber') || name.includes('zucchini') || 
+    if (name.includes('tomato') || name.includes('cucumber') || name.includes('zucchini') ||
         name.includes('eggplant') || name.includes('pepper')) {
       return SEASONS.SUMMER;
     }
     // Exemples de légumes d'automne
-    else if (name.includes('pumpkin') || name.includes('squash') || name.includes('mushroom') || 
+    else if (name.includes('pumpkin') || name.includes('squash') || name.includes('mushroom') ||
              name.includes('brussels') || name.includes('cabbage')) {
       return SEASONS.AUTUMN;
     }
     // Exemples de légumes d'hiver
-    else if (name.includes('potato') || name.includes('carrot') || name.includes('turnip') || 
+    else if (name.includes('potato') || name.includes('carrot') || name.includes('turnip') ||
              name.includes('leek') || name.includes('onion')) {
       return [...SEASONS.AUTUMN, ...SEASONS.WINTER]; // Disponible en automne et hiver
     }
     // Exemples de légumes de printemps
-    else if (name.includes('asparagus') || name.includes('pea') || name.includes('spinach') || 
+    else if (name.includes('asparagus') || name.includes('pea') || name.includes('spinach') ||
              name.includes('lettuce') || name.includes('radish')) {
       return SEASONS.SPRING;
     }
   }
-  
+
   // Par défaut, retourner toute l'année
   return allYear;
 }
 
 // Fonction pour vérifier si les saisons sont cohérentes
-function checkSeasonalAvailability(months) {
+function checkSeasonalAvailability (months) {
   // Si tous les mois sont présents, c'est disponible toute l'année
   const allMonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const isAllYear = allMonths.every(month => months.includes(month));
-  
+
   if (isAllYear) {
     return { isAllYear: true, seasons: ['summer', 'autumn', 'winter', 'spring'] };
   }
-  
+
   // Sinon, déterminer les saisons disponibles
   const availableSeasons = [];
-  
+
   const summerMonths = SEASONS.SUMMER.filter(month => months.includes(month));
   if (summerMonths.length > 0) availableSeasons.push('summer');
-  
+
   const autumnMonths = SEASONS.AUTUMN.filter(month => months.includes(month));
   if (autumnMonths.length > 0) availableSeasons.push('autumn');
-  
+
   const winterMonths = SEASONS.WINTER.filter(month => months.includes(month));
   if (winterMonths.length > 0) availableSeasons.push('winter');
-  
+
   const springMonths = SEASONS.SPRING.filter(month => months.includes(month));
   if (springMonths.length > 0) availableSeasons.push('spring');
-  
+
   return { isAllYear: false, seasons: availableSeasons };
 }
 
 // Fonction pour valider un ingrédient
-function validateIngredient(ingredient) {
+function validateIngredient (ingredient) {
   const issues = [];
   const name = ingredient.name.toLowerCase();
   const type = ingredient.type || 'other';
-  
+
   // Vérifier le type
   if (!type || type === 'other') {
     // Essayer de déterminer le type basé sur le nom
@@ -203,52 +204,52 @@ function validateIngredient(ingredient) {
       issues.push(`Type devrait être '${detectedType}' pour ${name}`);
     }
   }
-  
+
   // Vérifier les règles spécifiques au type
   const rules = TYPE_VALIDATION_RULES[type];
   if (rules) {
     if (rules.frozenOrCanned !== undefined && ingredient.frozenOrCanned !== rules.frozenOrCanned) {
       issues.push(`frozenOrCanned devrait être ${rules.frozenOrCanned} pour ${type} ${name}`);
     }
-    
+
     if (rules.storeShelf !== undefined && ingredient.storeShelf !== rules.storeShelf) {
       issues.push(`storeShelf devrait être ${rules.storeShelf} pour ${type} ${name}`);
     }
-    
+
     if (rules.checkPork && !ingredient.withPork && containsPork(name)) {
       issues.push(`withPork devrait être true pour ${name}`);
     }
-    
+
     if (rules.checkSeasons && ingredient.seasons && ingredient.seasons.length === 12) {
       issues.push(`${name} ne devrait pas être disponible toute l'année, vérifier les saisons`);
     }
   }
-  
+
   // Vérifier ignoreShoppingList pour les ingrédients communs
   if (isCommonIngredient(name) && !ingredient.ignoreShoppingList) {
     issues.push(`ignoreShoppingList devrait être true pour l'ingrédient commun ${name}`);
   }
-  
+
   // Vérifier withPork
   if (containsPork(name) && !ingredient.withPork) {
     issues.push(`withPork devrait être true pour ${name}`);
   }
-  
+
   // Vérifier les saisons pour les fruits et légumes
   if ((type === 'fruit' || type === 'vegetable') && ingredient.seasons) {
     const seasonalInfo = checkSeasonalAvailability(ingredient.seasons);
-    
+
     // Les fruits et légumes ne devraient généralement pas être disponibles toute l'année
     if (seasonalInfo.isAllYear && rules && rules.checkSeasons) {
       issues.push(`${name} ne devrait pas être disponible toute l'année, vérifier les saisons`);
     }
-    
+
     // Vérifier si les saisons sont cohérentes (par exemple, pas seulement un mois isolé)
     if (!seasonalInfo.isAllYear && seasonalInfo.seasons.length === 0) {
       issues.push(`Saisons incohérentes pour ${name}: ${ingredient.seasons.join(', ')}`);
     }
   }
-  
+
   return {
     id: ingredient._id,
     name: name,
@@ -258,55 +259,55 @@ function validateIngredient(ingredient) {
 }
 
 // Fonction pour exporter les résultats dans un fichier CSV
-function exportToCSV(results, stats) {
+function exportToCSV (results, stats) {
   const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
   const filename = `ingredient-analysis-${timestamp}.csv`;
   const filepath = path.join(process.cwd(), filename);
-  
+
   // Créer l'en-tête du CSV
   let csvContent = 'ID,Name,Type,Issues\n';
-  
+
   // Ajouter les données
   results.forEach(result => {
     const issues = result.issues.join(' | ').replace(/,/g, ';'); // Remplacer les virgules pour éviter de casser le CSV
     csvContent += `${result.id},${result.name},${result.type},"${issues}"\n`;
   });
-  
+
   // Ajouter les statistiques
   csvContent += '\nStatistics\n';
   csvContent += `Total ingredients,${stats.total}\n`;
   csvContent += `Ingredients with issues,${stats.withIssues}\n`;
-  
+
   csvContent += '\nDistribution by type\n';
   Object.entries(stats.byType).forEach(([type, count]) => {
     csvContent += `${type},${count},${Math.round(count/stats.total*100)}%\n`;
   });
-  
+
   csvContent += '\nCommon issues\n';
   Object.entries(stats.commonIssues)
     .sort((a, b) => b[1] - a[1])
     .forEach(([issue, count]) => {
       csvContent += `${issue},${count}\n`;
     });
-  
+
   // Écrire le fichier
   fs.writeFileSync(filepath, csvContent);
   console.log(`\n📊 Résultats exportés dans ${filename}`);
-  
+
   return filepath;
 }
 
 // Fonction principale pour analyser la base de données
-async function analyzeDatabase() {
+async function analyzeDatabase () {
   try {
     // Connexion à MongoDB
     await mongoose.connect(config.database.uri, config.database.options);
     console.log('✓ Connecté à MongoDB');
-    
+
     // Récupérer tous les ingrédients
     const ingredients = await Ingredient.find({});
     console.log(`📊 Analyse de ${ingredients.length} ingrédients...`);
-    
+
     // Statistiques
     const stats = {
       total: ingredients.length,
@@ -314,26 +315,26 @@ async function analyzeDatabase() {
       byType: {},
       commonIssues: {}
     };
-    
+
     // Initialiser les compteurs par type
     Object.keys(TYPE_VALIDATION_RULES).forEach(type => {
       stats.byType[type] = 0;
     });
     stats.byType.other = 0;
-    
+
     // Analyser chaque ingrédient
     const results = [];
-    
+
     for (const ingredient of ingredients) {
       const result = validateIngredient(ingredient);
-      
+
       // Mettre à jour les statistiques
       stats.byType[result.type] = (stats.byType[result.type] || 0) + 1;
-      
+
       if (result.issues.length > 0) {
         stats.withIssues++;
         results.push(result);
-        
+
         // Compter les types de problèmes
         result.issues.forEach(issue => {
           const issueType = issue.split(' ')[0]; // Prendre le premier mot comme type de problème
@@ -341,24 +342,24 @@ async function analyzeDatabase() {
         });
       }
     }
-    
+
     // Afficher les résultats
     console.log('\n📊 STATISTIQUES:');
     console.log(`Total d'ingrédients: ${stats.total}`);
     console.log(`Ingrédients avec problèmes: ${stats.withIssues} (${Math.round(stats.withIssues/stats.total*100)}%)`);
-    
+
     console.log('\nRépartition par type:');
     Object.entries(stats.byType).forEach(([type, count]) => {
       console.log(`- ${type}: ${count} (${Math.round(count/stats.total*100)}%)`);
     });
-    
+
     console.log('\nProblèmes les plus courants:');
     Object.entries(stats.commonIssues)
       .sort((a, b) => b[1] - a[1])
       .forEach(([issue, count]) => {
         console.log(`- ${issue}: ${count}`);
       });
-    
+
     console.log('\n🔍 DÉTAILS DES PROBLÈMES:');
     results.forEach(result => {
       if (result.issues.length > 0) {
@@ -368,27 +369,27 @@ async function analyzeDatabase() {
         });
       }
     });
-    
+
     // Exporter les résultats si l'argument --export est présent
     if (process.argv.includes('--export')) {
       const filepath = exportToCSV(results, stats);
       console.log(`\n📋 Les résultats ont été exportés dans ${filepath}`);
     }
-    
+
     // Proposer des corrections automatiques
     console.log('\n🔧 CORRECTIONS AUTOMATIQUES POSSIBLES:');
     console.log('Pour appliquer les corrections, exécutez ce script avec l\'argument --fix');
     console.log('Pour exporter les résultats en CSV, utilisez l\'argument --export');
-    
+
     // Vérifier si l'argument --fix est présent
     if (process.argv.includes('--fix')) {
       console.log('\n🛠️ APPLICATION DES CORRECTIONS...');
       let fixCount = 0;
-      
+
       for (const result of results) {
         if (result.issues.length > 0) {
           const updates = {};
-          
+
           // Déterminer les corrections à appliquer
           result.issues.forEach(issue => {
             if (issue.includes('Type devrait être')) {
@@ -407,7 +408,7 @@ async function analyzeDatabase() {
               updates.seasons = suggestSeasons(result.type, result.name);
             }
           });
-          
+
           if (Object.keys(updates).length > 0) {
             try {
               await Ingredient.updateOne({ _id: result.id }, { $set: updates });
@@ -419,10 +420,10 @@ async function analyzeDatabase() {
           }
         }
       }
-      
+
       console.log(`\n🎉 ${fixCount} ingrédients corrigés avec succès!`);
     }
-    
+
   } catch (error) {
     console.error('Erreur globale:', error);
   } finally {
@@ -440,4 +441,4 @@ analyzeDatabase().then(() => {
 }).catch(err => {
   console.error('❌ Erreur lors de l\'analyse:', err);
   process.exit(1);
-}); 
+});

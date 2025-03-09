@@ -10,4 +10,4 @@ router.post('/scripts/run', asyncApiHandler(runScript));
 router.get('/scripts/process/:processId/logs', asyncApiHandler(getProcessLogs));
 router.post('/scripts/process/:processId/stop', asyncApiHandler(stopProcess));
 
-export default router; 
+export default router;

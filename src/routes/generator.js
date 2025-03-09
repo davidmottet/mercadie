@@ -1,5 +1,4 @@
 import express from 'express';
-import { authMiddleware, requireRole } from '../middlewares/auth.js';
 import { asyncApiHandler } from '../middlewares/asyncHandler.js';
 import {
   generateIngredients,

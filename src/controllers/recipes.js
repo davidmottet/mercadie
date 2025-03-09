@@ -26,13 +26,13 @@ export const getRecipeById = async (req, res) => {
   const recipe = await Recipe.findById(req.params.id)
     .populate('steps')
     .populate('ingredients');
-  
+
   if (!recipe) {
     const error = new Error('Recette non trouvée');
     error.statusCode = 404;
     throw error;
   }
-  
+
   res.json(recipe);
 };
 
@@ -68,7 +68,7 @@ export const updateRecipe = async (req, res) => {
     error.statusCode = 404;
     throw error;
   }
-  
+
   res.json(recipe);
 };
 

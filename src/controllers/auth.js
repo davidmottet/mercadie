@@ -55,7 +55,7 @@ export const logout = async (req, res) => {
     error.statusCode = 400;
     throw error;
   }
-  
+
   // Invalider le token dans la base de données
   await Session.updateOne({ token }, { isValid: false });
 

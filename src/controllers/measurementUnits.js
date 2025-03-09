@@ -13,13 +13,13 @@ export const getMeasurementUnits = async (req, res) => {
 
 export const getMeasurementUnitById = async (req, res) => {
   const measurementUnit = await MeasurementUnit.findById(req.params.id);
-  
+
   if (!measurementUnit) {
     const error = new Error('Unité de mesure non trouvée');
     error.statusCode = 404;
     throw error;
   }
-  
+
   res.json(measurementUnit);
 };
 
@@ -35,18 +35,18 @@ export const updateMeasurementUnit = async (req, res) => {
     error.statusCode = 404;
     throw error;
   }
-  
+
   res.json(measurementUnit);
 };
 
 export const deleteMeasurementUnit = async (req, res) => {
   const measurementUnit = await MeasurementUnit.findByIdAndDelete(req.params.id);
-  
+
   if (!measurementUnit) {
     const error = new Error('Unité de mesure non trouvée');
     error.statusCode = 404;
     throw error;
   }
-  
+
   res.json({ message: 'Unité de mesure supprimée avec succès' });
 };
