@@ -11,8 +11,8 @@ import { fullUrl } from './src/utils/isIpAddress.js';
 if (config.app.useHttps === 'true') {
   try {
     const options = {
-      key: fs.readFileSync(path.join(process.cwd(), 'ssl', 'private.key')),
-      cert: fs.readFileSync(path.join(process.cwd(), 'ssl', 'certificate.crt'))
+      key: fs.readFileSync(config.app.sslKey),
+      cert: fs.readFileSync(config.app.sslCert)
     };
 
     https.createServer(options, app).listen(config.app.port, () => {

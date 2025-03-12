@@ -4,6 +4,8 @@ const config = {
     url: process.env.URL || "mercadie.com",
     port: process.env.PORT || 3000,
     useHttps: process.env.USE_HTTPS || false,
+    sslKey: process.env.SSL_KEY || null,
+    sslCert: process.env.SSL_CERT || null,
     environment: process.env.NODE_ENV || "development",
   },
   database: {
