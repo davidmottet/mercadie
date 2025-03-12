@@ -3,6 +3,7 @@ const config = {
     name: "mercadie",
     url: process.env.URL || "mercadie.com",
     port: process.env.PORT || 3000,
+    useHttps: process.env.USE_HTTPS || false,
     environment: process.env.NODE_ENV || "development",
   },
   database: {

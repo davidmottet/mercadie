@@ -65,3 +65,6 @@ docker-compose.override.yml
 *.backup
 *.orig
 *.rej
+
+# SSL
+ssl/
