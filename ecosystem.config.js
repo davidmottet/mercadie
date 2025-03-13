@@ -1,7 +1,7 @@
 export default {
   apps: [{
     name: "mercadie",
-    script: "server.js",
+    script: "./server.js",
     interpreter: "node",
     interpreter_args: "-r dotenv/config",
     env: {
