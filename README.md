@@ -144,6 +144,54 @@ npm test
    npm start
    ```
 
+## Gestion des processus avec PM2
+
+Pour gérer votre application en production avec PM2, suivez ces étapes :
+
+1. **Installation de PM2** :
+   ```bash
+   npm install pm2@latest -g
+   ```
+
+2. **Démarrage de l'application** :
+   ```bash
+   pm2 start server.js --name "mercadie" --node-args="-r dotenv/config" --env production
+   ```
+
+3. **Commandes PM2 utiles** :
+   ```bash
+   # Gestion des processus
+   pm2 restart app_name    # Redémarre l'application
+   pm2 reload app_name    # Recharge l'application (zero downtime)
+   pm2 stop app_name      # Arrête l'application
+   pm2 delete app_name    # Supprime l'application de PM2
+
+   # Vous pouvez utiliser :
+   # - "all" pour agir sur tous les processus
+   # - "id" pour agir sur un processus spécifique
+   # Exemple :
+   pm2 restart all        # Redémarre toutes les applications
+   pm2 stop 0            # Arrête le processus avec l'ID 0
+
+   # Surveillance
+   pm2 list              # Liste tous les processus
+   pm2 logs app_name     # Affiche les logs
+   pm2 monit             # Moniteur en temps réel
+   ```
+
+4. **Démarrage automatique au reboot** :
+   ```bash
+   pm2 startup
+   pm2 save
+   ```
+
+5. **Options de configuration** :
+   - `--watch` : Redémarre automatiquement l'application quand les fichiers changent
+   - `--max-memory-restart 1G` : Redémarre si la mémoire dépasse 1GB
+   - `--time` : Ajoute un timestamp aux logs
+   - `--no-autorestart` : Désactive le redémarrage automatique
+   - `--cron "0 0 * * *"` : Redémarre l'application selon un planning (exemple : tous les jours à minuit)
+
 ## Contribution
 
 Si vous souhaitez contribuer :
