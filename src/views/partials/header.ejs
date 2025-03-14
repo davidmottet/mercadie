@@ -1,48 +1,63 @@
-<header id="main-header" class="bg-transparent fixed z-50 top-0 left-0 w-full transition duration-500">
-    <nav class="flex items-center max-w-screen-xl mx-auto px-6 py-3">
-        <div class="flex flex-grow">
-            <img class="w-36 cursor-pointer" src="./logo.png" alt="logo" onclick="window.location.href='/'" />
+<!-- Header -->
+<header id="main-header" class="fixed z-50 top-0 left-0 w-full transition duration-500">
+    <div class="flex items-center justify-between px-6 py-4">
+        <div class="flex items-center space-x-6">
+            
+            <!-- Liens de navigation -->
+            <nav class="hidden md:flex space-x-4">
+                <a href="#" class="bg-white text-gray-800 px-2 lg:px-4 py-2 rounded-full shadow-lg hover:bg-gray-900 hover:text-gray-100 transition duration-300">
+                    <span class="text-xl">🏠</span><span class="hidden xl:inline ml-2">Home</span>
+                </a>
+                <a href="#" class="bg-white text-gray-800 px-2 lg:px-4 py-2 rounded-full shadow-lg hover:bg-gray-900 hover:text-gray-100 transition duration-300">
+                    <span class="text-xl">📅</span><span class="hidden xl:inline ml-2">Meal Plans</span>
+                </a>
+                <a href="#" class="bg-white text-gray-800 px-2 lg:px-4 py-2 rounded-full shadow-lg hover:bg-gray-900 hover:text-gray-100 transition duration-300">
+                    <span class="text-xl">🥗</span><span class="hidden xl:inline ml-2">Nutrition</span>
+                </a>
+                <a href="#" class="bg-white text-gray-800 px-2 lg:px-4 py-2 rounded-full shadow-lg hover:bg-gray-900 hover:text-gray-100 transition duration-300">
+                    <span class="text-xl">📊</span><span class="hidden xl:inline ml-2">Analytics</span>
+                </a>
+                <a href="#" class="bg-white text-gray-800 px-2 lg:px-4 py-2 rounded-full shadow-lg hover:bg-gray-900 hover:text-gray-100 transition duration-300">
+                    <span class="text-xl">🛒</span><span class="hidden xl:inline ml-2">Order Groceries</span>
+                </a>
+                <a href="#" class="bg-white text-gray-800 px-2 lg:px-4 py-2 rounded-full shadow-lg hover:bg-gray-900 hover:text-gray-100 transition duration-300">
+                    <span class="text-xl">👩‍🍳</span><span class="hidden xl:inline ml-2">Recipes</span>
+                </a>
+                <a href="#" class="bg-white text-gray-800 px-2 lg:px-4 py-2 rounded-full shadow-lg hover:bg-gray-900 hover:text-gray-100 transition duration-300">
+                    <span class="text-xl">💬</span><span class="hidden xl:inline ml-2">Forum</span>
+                </a>
+            </nav>
         </div>
-        <% if (user.username) { %>
-            <div class="flex items-center justify-end space-x-4">
-                <a href="/ingredients" class="text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 transition duration-300 cursor-pointer">
-                    <i class="fas fa-carrot mr-1"></i>
-                    Ingrédients
-                </a>
-                <a href="/admin" class="text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 transition duration-300 cursor-pointer">
-                    <i class="fas fa-cog mr-1"></i>
-                    Admin
-                </a>
+        
+        <!-- Profil utilisateur -->
+        <% if (locals.user && user.username) { %>
+            <div class="flex items-center space-x-4">
                 <div class="relative flex cursor-pointer" onclick="window.location.href='/orders'">
                     <span class="bg-blue-500 w-6 h-6 rounded-full flex items-center justify-center text-white absolute -right-2 -top-2"><%= order.length %></span>
-                    <i class="fas fa-shopping-cart cursor-pointer w-6 h-6 text-gray-700 dark:text-gray-300"></i>
+                    <span class="text-xl">🛒</span>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <img src="<%= user.photoURL %>" alt="<%= user.username %>" class="w-10 h-10 rounded-full border-2 border-blue-500" />
-                    <p class="text-gray-700 dark:text-gray-300 hidden md:block lg:block"><%= user.username %></p>
+                <div class="bg-white w-10 h-10 flex items-center justify-center rounded-full shadow-md cursor-pointer hover:bg-gray-900 transition duration-300">
+                    <span>🔔</span>
                 </div>
-                <button onclick="logoutUser()" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 p-2 rounded-full transition duration-300 cursor-pointer">
-                    <i class="fas fa-sign-out-alt"></i>
+                <img src="<%= user.photoURL %>" alt="<%= user.username %>" class="w-10 h-10 rounded-full border-2 border-blue-500" />
+                <span class="text-gray-700 hidden md:block"><%= user.username %></span>
+                <button onclick="logoutUser()" class="cursor-pointer hover:bg-gray-300 text-gray-700 p-2 rounded-full transition duration-300">
+                    <span class="text-xl">🚪</span>
                 </button>
             </div>
         <% } else { %>
-            <div class="flex items-center justify-end space-x-4">
-                <a href="/ingredients" class="text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 transition duration-300 cursor-pointer">
-                    <i class="fas fa-carrot mr-1"></i>
-                    Ingrédients
-                </a>
-                <button onclick="window.location.href='/signin'" class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 transition duration-300 cursor-pointer">
-                    <i class="fas fa-sign-in-alt mr-1"></i>
-                    Connexion
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='/signin'" class="cursor-pointer bg-white text-gray-800 px-4 py-2 rounded-full shadow-lg hover:bg-gray-900 hover:text-gray-100 transition duration-300">
+                    <span class="text-xl mr-2">🔑</span>Connexion
                 </button>
-                <button onclick="window.location.href='/signup'" class="bg-blue-500 hover:bg-blue-600 px-6 py-2 text-white rounded-full transition duration-300 cursor-pointer">
-                    <i class="fas fa-user-plus mr-1"></i>
-                    Inscription
+                <button onclick="window.location.href='/signup'" class="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-600 transition duration-300">
+                    <span class="text-xl mr-2">✨</span>Inscription
                 </button>
             </div>
         <% } %>
-    </nav>
+    </div>
 </header>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const header = document.getElementById('main-header');
