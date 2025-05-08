@@ -33,5 +33,5 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "dist/*"
-        target: "/var/www/sites/template.mercadie"
+        target: "/var/www/sites/mercadie"
         strip_components: 1 
