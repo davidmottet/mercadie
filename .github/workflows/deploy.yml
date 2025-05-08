@@ -1,0 +1,37 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]  # Changez 'main' par votre branche principale si nécessaire
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'  # Ajustez la version selon vos besoins
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build
+      run: npm run build
+      env:
+        VITE_PARSE_APP_ID: ${{ secrets.VITE_PARSE_APP_ID }}
+        VITE_PARSE_JAVASCRIPT_KEY: ${{ secrets.VITE_PARSE_JAVASCRIPT_KEY }}
+        VITE_PARSE_SERVER_URL: ${{ secrets.VITE_PARSE_SERVER_URL }}
+    
+    - name: Deploy to server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "dist/*"
+        target: "/var/www/sites/template.mercadie"
+        strip_components: 1 
